@@ -1,4 +1,4 @@
-﻿using Domain.Interface.IServices.Authentication;
+﻿using Domain.Interface.Services.Authentication;
 
 namespace Infrastructure.Authentication
 {

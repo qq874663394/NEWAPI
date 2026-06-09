@@ -1,15 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
 using Domain.Entities;
-using Microsoft.Extensions.Options;
-using System.Data;
-using Repositories.Data;
-using Newtonsoft.Json;
-using System.Reflection.Metadata;
-using Domain.AggregateRoots;
-using Domain.Model;
 
 namespace Repositories.WebApiDB
 {
@@ -33,15 +23,15 @@ namespace Repositories.WebApiDB
         public virtual DbSet<T_Resource> T_Resources { get; set; } = null!;
         public virtual DbSet<T_Role> T_Roles { get; set; } = null!;
         public virtual DbSet<T_User> T_Users { get; set; } = null!;
-        //public virtual DbSet<T_UserOrg> T_UserOrgs { get; set; } = null!;
-        //public virtual DbSet<T_UserRole> T_UserRoles { get; set; } = null!;
+        public virtual DbSet<T_UserOrg> T_UserOrgs { get; set; } = null!;
+        public virtual DbSet<T_UserRole> T_UserRoles { get; set; } = null!;
         public virtual DbSet<T_UserRoleOrg> T_UserRoleOrg { get; set; } = null!;
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(
-                typeof(ApplicationDbContext).Assembly);
+                typeof(WebApiDbContext).Assembly);
             base.OnModelCreating(modelBuilder);
         }
     }

@@ -1,12 +1,9 @@
 ﻿using Domain.Entities;
+using Domain.Interface.Repositories;
 using Domain.Interface.Services.Authentication;
 using Domain.Model.Authentication;
-using Domain.Specifications;
-using System;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Authentication.Providers
 {
@@ -26,15 +23,7 @@ namespace Infrastructure.Authentication.Providers
         public async Task<T_User?> AuthenticateAsync(
             AuthenticationRequest request)
         {
-            return await _repository
-                .GetBySpecificationAsync(
-                    Specification<T_User>.Eval(
-                        x =>
-                            x.Apo!.ToLower()
-                            ==
-                            request.Username.ToLower()),
-                    q => q.Include(
-                        x => x.UserRoleOrg));
+            return _repository.Query(p => p.Apo!.ToLower()==request.Username.ToLower()).Include(x => x.UserRoleOrg);
         }
     }
 }

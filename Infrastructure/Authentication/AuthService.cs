@@ -1,8 +1,8 @@
-﻿using Domain.Interface.IServices.Authentication;
+﻿using Domain.Interface.Services.Authentication;
 using Domain.Model.Authentication;
 namespace Infrastructure.Authentication
 {
-    public class AuthService : Domain.Interface.IServices.Authentication.IAuthService
+    public class AuthService : IAuthService
     {
         private readonly AuthenticationProviderRegistry _registry;
         private readonly ITokenService _tokenService;
