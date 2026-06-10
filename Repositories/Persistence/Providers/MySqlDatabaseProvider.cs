@@ -11,8 +11,6 @@ public class MySqlDatabaseProvider
         DbContextOptionsBuilder options,
         string connectionString)
     {
-        options.UseMySql(
-            connectionString,
-            ServerVersion.AutoDetect(connectionString));
+        options.UseMySQL(connectionString);
     }
 }

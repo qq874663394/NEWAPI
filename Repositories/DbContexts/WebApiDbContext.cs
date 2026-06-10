@@ -13,20 +13,6 @@ namespace Repositories.WebApiDB
             : base(options)
         {
         }
-        public virtual DbSet<T_Button> T_Buttons { get; set; } = null!;
-        public virtual DbSet<T_Dictionary> T_Dictionarys { get; set; } = null!;
-        public virtual DbSet<T_Permission> T_Permissions { get; set; } = null!;
-        public virtual DbSet<T_EmailQueue> T_EmailQueues { get; set; } = null!;
-        public virtual DbSet<T_Log> T_Logs { get; set; } = null!;
-        public virtual DbSet<T_Route> T_Routes { get; set; } = null!;
-        public virtual DbSet<T_Org> T_Orgs { get; set; } = null!;
-        public virtual DbSet<T_Resource> T_Resources { get; set; } = null!;
-        public virtual DbSet<T_Role> T_Roles { get; set; } = null!;
-        public virtual DbSet<T_User> T_Users { get; set; } = null!;
-        public virtual DbSet<T_UserOrg> T_UserOrgs { get; set; } = null!;
-        public virtual DbSet<T_UserRole> T_UserRoles { get; set; } = null!;
-        public virtual DbSet<T_UserRoleOrg> T_UserRoleOrg { get; set; } = null!;
-
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

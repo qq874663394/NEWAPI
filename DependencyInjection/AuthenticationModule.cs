@@ -1,15 +1,8 @@
-﻿using Domain.Interface.IServices.Authentication;
-using Microsoft.Extensions.DependencyInjection;
-using Infrastructure.Authentication.Providers;
-using Infrastructure.Authentication.Security;
-using Infrastructure.Authentication;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using System.Reflection;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Repositories.Authentication;
+using Domain.Interface.Services.Authentication;
+using Repositories.Authentication.Providers;
+using Repositories.Authentication.Security;
 
 namespace DependencyInjection
 {

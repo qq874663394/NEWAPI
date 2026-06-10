@@ -1,0 +1,11 @@
+﻿EF Core Power Tools 的 Handlebars 模板采用 partial 模板 拆分方式：
+
+主模板：CSharpEntityType.hbs 负责整体结构，但它的主要内容是通过 {{> Class }} 来引用 Partials/Class.hbs。
+
+Partials/Class.hbs：负责生成实体类的完整代码（包括 using、命名空间、类声明、构造函数、属性等），其中还会进一步引用：
+
+Imports.hbs → 生成 using 语句
+
+Constructor.hbs → 生成构造函数
+
+Properties.hbs → 生成属性

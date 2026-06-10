@@ -1,5 +1,4 @@
-﻿using Domain.Entities;
-using Domain.Interface.Repositories;
+﻿using Domain.Interface.Repositories;
 using Domain.Interface.Services.Authentication;
 using Domain.Model.Authentication;
 using Domain.Specifications;

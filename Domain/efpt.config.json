@@ -1,0 +1,106 @@
+﻿{
+   "CodeGenerationMode": 5,
+   "ContextClassName": "testContext",
+   "ContextNamespace": null,
+   "FilterSchemas": false,
+   "IncludeConnectionString": false,
+   "IrregularWords": null,
+   "MinimumProductVersion": "2.6.1604",
+   "ModelNamespace": null,
+   "OutputContextPath": null,
+   "OutputPath": "Entities",
+   "PluralRules": null,
+   "PreserveCasingWithRegex": true,
+   "ProjectRootNamespace": "Domain",
+   "Schemas": null,
+   "SelectedHandlebarsLanguage": 2,
+   "SelectedToBeGenerated": 0,
+   "SingularRules": null,
+   "T4TemplatePath": null,
+   "Tables": [
+      {
+         "Name": "sys_attachment",
+         "ObjectType": 0
+      },
+      {
+         "Name": "sys_button",
+         "ObjectType": 0
+      },
+      {
+         "Name": "sys_buttonpermission",
+         "ObjectType": 0
+      },
+      {
+         "Name": "sys_dictionary",
+         "ObjectType": 0
+      },
+      {
+         "Name": "sys_emailqueue",
+         "ObjectType": 0
+      },
+      {
+         "Name": "sys_log",
+         "ObjectType": 0
+      },
+      {
+         "Name": "sys_menupermission",
+         "ObjectType": 0
+      },
+      {
+         "Name": "sys_org",
+         "ObjectType": 0
+      },
+      {
+         "Name": "sys_permissiondelegation",
+         "ObjectType": 0
+      },
+      {
+         "Name": "sys_reportline",
+         "ObjectType": 0
+      },
+      {
+         "Name": "sys_role",
+         "ObjectType": 0
+      },
+      {
+         "Name": "sys_route",
+         "ObjectType": 0
+      },
+      {
+         "Name": "sys_user",
+         "ObjectType": 0
+      },
+      {
+         "Name": "sys_userroleorg",
+         "ObjectType": 0
+      }
+   ],
+   "UiHint": null,
+   "UncountableWords": null,
+   "UseAsyncStoredProcedureCalls": true,
+   "UseBoolPropertiesWithoutDefaultSql": false,
+   "UseDatabaseNames": true,
+   "UseDatabaseNamesForRoutines": true,
+   "UseDateOnlyTimeOnly": true,
+   "UseDbContextSplitting": false,
+   "UseDecimalDataAnnotationForSprocResult": true,
+   "UseFluentApiOnly": true,
+   "UseHandleBars": false,
+   "UseHierarchyId": false,
+   "UseInflector": false,
+   "UseInternalAccessModifiersForSprocsAndFunctions": false,
+   "UseLegacyPluralizer": false,
+   "UseManyToManyEntity": false,
+   "UseNoDefaultConstructor": false,
+   "UseNoNavigations": false,
+   "UseNoObjectFilter": false,
+   "UseNodaTime": false,
+   "UseNullableReferences": false,
+   "UsePrefixNavigationNaming": false,
+   "UseSchemaFolders": false,
+   "UseSchemaNamespaces": false,
+   "UseSpatial": false,
+   "UseT4": true,
+   "UseT4Split": false,
+   "UseTypedTvpParameters": true
+}
