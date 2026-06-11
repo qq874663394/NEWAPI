@@ -1,20 +1,14 @@
 ﻿using Domain.Entities;
 using Domain.Interface.Services.Authentication;
 using Domain.Model.Authentication;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Infrastructure.Authentication.Providers
+namespace Repositories.Authentication.Providers
 {
     public class WindowsAuthenticationProvider
         : IAuthenticationProvider
     {
         public string Key => "Windows";
 
-        public Task<T_User?> AuthenticateAsync(
+        public Task<SysUser?> AuthenticateAsync(
             AuthenticationRequest request)
         {
             throw new NotImplementedException(

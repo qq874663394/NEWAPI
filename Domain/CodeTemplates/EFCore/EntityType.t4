@@ -27,8 +27,7 @@
 
     var usings = new List<string>
     {
-        "System",
-        "System.Collections.Generic"
+        "Domain.Interface.IAggregateRoots"
     };
 
     if (Options.UseDataAnnotations)
@@ -65,12 +64,17 @@ namespace <#= NamespaceHint #>;
         }
     }
 #>
-public partial class <#= EntityType.Name.ToUpperInvariant() #> : Entity, IAggregateRoot
+public partial class <#= EntityType.Name #> : Entity, IAggregateRoot
 {
 <#
     var firstProperty = true;
+    var baseProps = new HashSet<string> { "Code", "CreateTime", "CreateUserCode", "ModifyTime", "ModifyUserCode", "IsEnable", "IsDelete" };
     foreach (var property in EntityType.GetProperties().OrderBy(p => p.GetColumnOrder() ?? -1))
     {
+        if (baseProps.Contains(property.Name))
+        {
+            continue;
+        }
         if (!firstProperty)
         {
             WriteLine("");

@@ -1,36 +1,32 @@
-﻿using Domain.Interface.Repositories;
+﻿using Domain.Entities;
+using Domain.Interface.Repositories;
 using Domain.Interface.Services.Authentication;
 using Domain.Model.Authentication;
 using Domain.Specifications;
+using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Authentication.Providers
+namespace Repositories.Authentication.Providers
 {
     public class PasswordAuthenticationProvider
            : IAuthenticationProvider
     {
-        private readonly IRepository<T_User> _repository;
+        private readonly IRepository<SysUser> _repository;
 
         public string Key => "Password";
 
         public PasswordAuthenticationProvider(
-            IRepository<T_User> repository)
+            IRepository<SysUser> repository)
         {
             _repository = repository;
         }
 
-        public async Task<T_User?> AuthenticateAsync(
+        public async Task<SysUser?> AuthenticateAsync(
             AuthenticationRequest request)
         {
-            var user =
-                (await _repository.GetAllAsync(
-                    Specification<T_User>.Eval(
-                        x =>
-                            x.Name!.ToLower()
-                            ==
-                            request.Username.ToLower()),
-                    q => q.Include(
-                        x => x.UserRoleOrg)))
-                .FirstOrDefault();
+            var user = await _repository.Query()
+                .Where(p => p.Apo != null && p.Apo == request.Username)
+                .Include(p => p.UserRoleOrgs)
+                .FirstOrDefaultAsync();
 
             if (user == null)
                 return null;

@@ -21,6 +21,6 @@ namespace Domain.Interface.Services.Authentication
         /// <summary>
         /// 登录
         /// </summary>
-        Task<T_User?> AuthenticateAsync(AuthenticationRequest request);
+        Task<SysUser?> AuthenticateAsync(AuthenticationRequest request);
     }
 }

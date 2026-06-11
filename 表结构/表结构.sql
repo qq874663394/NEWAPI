@@ -6,8 +6,17 @@ CREATE TABLE `SYS_User` (
     `Name` VARCHAR(100) NOT NULL COMMENT '登录账号',
     `FullName` VARCHAR(100) DEFAULT NULL COMMENT '用户全名',
     `Password` VARCHAR(255) DEFAULT NULL COMMENT '密码（加密）',
+    `Apo` VARCHAR(20) DEFAULT NULL COMMENT 'APO账号',
     `Email` VARCHAR(200) DEFAULT NULL COMMENT '邮箱',
     `Phone` VARCHAR(20) DEFAULT NULL COMMENT '手机号',
+    `Tel` VARCHAR(20) DEFAULT NULL COMMENT '座机',
+    `DateOfBirth` DATETIME DEFAULT NULL COMMENT '生日',
+	`Sex` int DEFAULT NULL COMMENT '性别',
+	`DocumentType` int DEFAULT NULL COMMENT '证件类型',
+	`DocumentNumber` longtext DEFAULT NULL COMMENT '证件号码',
+	`LastLoginTime` datetime(6) DEFAULT NULL COMMENT '最后登录时间',
+    `PasswordLastSetTime` datetime(6) DEFAULT NULL COMMENT '最后修改时间',
+    `LastFewPasswords` VARCHAR(255) DEFAULT NULL COMMENT '最近几次密码',
     `IsActive` BIT(1) DEFAULT b'1' COMMENT '是否活动',
     `IsEnable` BIT(1) NOT NULL DEFAULT b'1' COMMENT '是否启用',
     `IsDelete` BIT(1) NOT NULL DEFAULT b'0' COMMENT '软删除',
@@ -340,7 +349,7 @@ CREATE TABLE `SYS_Log` (
     KEY `idx_createtime` (`CreateTime`),
     KEY `idx_ip` (`IP`),
     KEY `idx_isdelete` (`IsDelete`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='通用日志表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='通用日志表';t_org
 
 
 

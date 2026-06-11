@@ -1,6 +1,6 @@
 ﻿using Domain.Interface.Services.Authentication;
 
-namespace Infrastructure.Authentication
+namespace Repositories.Authentication
 {
     public class AuthenticationProviderRegistry
     {

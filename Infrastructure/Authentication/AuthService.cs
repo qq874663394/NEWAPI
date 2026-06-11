@@ -1,6 +1,6 @@
 ﻿using Domain.Interface.Services.Authentication;
 using Domain.Model.Authentication;
-namespace Infrastructure.Authentication
+namespace Repositories.Authentication
 {
     public class AuthService : IAuthService
     {
