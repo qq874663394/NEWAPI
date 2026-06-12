@@ -15,8 +15,11 @@ CREATE TABLE `SYS_User` (
 	`DocumentType` int DEFAULT NULL COMMENT '证件类型',
 	`DocumentNumber` longtext DEFAULT NULL COMMENT '证件号码',
 	`LastLoginTime` datetime(6) DEFAULT NULL COMMENT '最后登录时间',
-    `PasswordLastSetTime` datetime(6) DEFAULT NULL COMMENT '最后修改时间',
-    `LastFewPasswords` VARCHAR(255) DEFAULT NULL COMMENT '最近几次密码',
+    `FailedLoginCount` int  DEFAULT NULL COMMENT '登录失败计次',
+    `IsLocked` BIT(1) DEFAULT b'1' COMMENT '是否已锁定',
+	`LockEndTime` datetime(6) DEFAULT NULL COMMENT '锁定结束时间',
+    `PasswordLastSetTime` datetime(6) DEFAULT NULL COMMENT '最后修改密码时间',
+    `LastFewPasswords` VARCHAR(255) DEFAULT NULL COMMENT '最近的密码',
     `IsActive` BIT(1) DEFAULT b'1' COMMENT '是否活动',
     `IsEnable` BIT(1) NOT NULL DEFAULT b'1' COMMENT '是否启用',
     `IsDelete` BIT(1) NOT NULL DEFAULT b'0' COMMENT '软删除',
@@ -349,7 +352,7 @@ CREATE TABLE `SYS_Log` (
     KEY `idx_createtime` (`CreateTime`),
     KEY `idx_ip` (`IP`),
     KEY `idx_isdelete` (`IsDelete`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='通用日志表';t_org
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='通用日志表';
 
 
 
