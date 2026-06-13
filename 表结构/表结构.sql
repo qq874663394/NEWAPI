@@ -459,8 +459,8 @@ INSERT INTO `SYS_Route` (`Code`, `ParentCode`, `Path`, `Component`, `Name`, `Hid
 
 -- 依赖终止子菜单
 INSERT INTO `SYS_Route` (`Code`, `ParentCode`, `Path`, `Component`, `Name`, `Hidden`, `MetaTitle`, `MetaIcon`, `Sort`, `IsEnable`, `CreateTime`) VALUES
-('route_dependency_termination_approved', 'route_dependency_termination', 'approved', 'views/dependency-termination/approved/index', 'DependencyTerminationApproved', 0, '已审核', 'success', 1, 1, NOW()),
-('route_dependency_termination_pending', 'route_dependency_termination', 'pending', 'views/dependency-termination/pending/index', 'DependencyTerminationPending', 0, '待审核', 'warning', 2, 1, NOW());
+('route_dep_ter_approved', 'route_dependency_termination', 'approved', 'views/dependency-termination/approved/index', 'DependencyTerminationApproved', 0, '已审核', 'success', 1, 1, NOW()),
+('route_dep_ter_pending', 'route_dependency_termination', 'pending', 'views/dependency-termination/pending/index', 'DependencyTerminationPending', 0, '待审核', 'warning', 2, 1, NOW());
 
 -- 供应商处理子菜单
 INSERT INTO `SYS_Route` (`Code`, `ParentCode`, `Path`, `Component`, `Name`, `Hidden`, `MetaTitle`, `MetaIcon`, `Sort`, `IsEnable`, `CreateTime`) VALUES
@@ -506,8 +506,8 @@ CALL InsertButtonsForMenu('route_mold_supplier');
 CALL InsertButtonsForMenu('route_mold_kaifeng');
 CALL InsertButtonsForMenu('route_delivery_change_approved');
 CALL InsertButtonsForMenu('route_delivery_change_pending');
-CALL InsertButtonsForMenu('route_dependency_termination_approved');
-CALL InsertButtonsForMenu('route_dependency_termination_pending');
+CALL InsertButtonsForMenu('route_dep_ter_approved');
+CALL InsertButtonsForMenu('route_dep_ter_pending');
 CALL InsertButtonsForMenu('route_supplier_process_history');
 CALL InsertButtonsForMenu('route_supplier_process_quotation');
 
@@ -533,9 +533,9 @@ VALUES (UUID(), 'Reject', 'route_delivery_change_pending', '驳回', 'handleReje
 
 -- 依赖终止待审核页面的审核按钮
 INSERT INTO SYS_Button (Code, ButtonKey, RouteCode, Name, Event, StyleType, Type, Sort, IsEnable, CreateTime)
-VALUES (UUID(), 'Approve', 'route_dependency_termination_pending', '通过', 'handleApprove', 'success', 1, 1, 1, NOW());
+VALUES (UUID(), 'Approve', 'route_dep_ter_pending', '通过', 'handleApprove', 'success', 1, 1, 1, NOW());
 INSERT INTO SYS_Button (Code, ButtonKey, RouteCode, Name, Event, StyleType, Type, Sort, IsEnable, CreateTime)
-VALUES (UUID(), 'Reject', 'route_dependency_termination_pending', '驳回', 'handleReject', 'danger', 1, 2, 1, NOW());
+VALUES (UUID(), 'Reject', 'route_dep_ter_pending', '驳回', 'handleReject', 'danger', 1, 2, 1, NOW());
 
 -- 供应商处理报价页面添加提交按钮
 INSERT INTO SYS_Button (Code, ButtonKey, RouteCode, Name, Event, StyleType, Type, Sort, IsEnable, CreateTime)
@@ -562,7 +562,7 @@ FROM SYS_Route r WHERE r.Code IN (
     'route_part', 'route_part_kaifeng', 'route_part_quotation', 'route_part_supplier',
     'route_mold', 'route_mold_quotation', 'route_mold_supplier', 'route_mold_kaifeng',
     'route_delivery_change', 'route_delivery_change_approved', 'route_delivery_change_pending',
-    'route_dependency_termination', 'route_dependency_termination_approved', 'route_dependency_termination_pending',
+    'route_dependency_termination', 'route_dep_ter_approved', 'route_dep_ter_pending',
     'route_supplier_process', 'route_supplier_process_history', 'route_supplier_process_quotation',
     'route_system_org'   -- 允许查看组织架构
 );
@@ -577,7 +577,7 @@ WHERE b.ButtonKey IN ('View', 'Export', 'Submit', 'Approve', 'Reject', 'SubmitQu
           'route_part_kaifeng', 'route_part_quotation', 'route_part_supplier',
           'route_mold_kaifeng', 'route_mold_quotation', 'route_mold_supplier',
           'route_delivery_change_approved', 'route_delivery_change_pending',
-          'route_dependency_termination_approved', 'route_dependency_termination_pending',
+          'route_dep_ter_approved', 'route_dep_ter_pending',
           'route_supplier_process_history', 'route_supplier_process_quotation'
       )
   );
