@@ -1,10 +1,11 @@
-﻿using System.Linq.Expressions;
-using Domain.Interface.IAggregateRoots;
+﻿using Domain.Base;
+using System.Linq.Expressions;
 
 namespace Domain.Interface.Repositories
-{/// <summary>
- /// 通用仓储接口
- /// </summary>
+{
+    /// <summary>
+    /// 通用仓储接口
+    /// </summary>
     public interface IRepository<TEntity>
         where TEntity : class, IEntity
     {

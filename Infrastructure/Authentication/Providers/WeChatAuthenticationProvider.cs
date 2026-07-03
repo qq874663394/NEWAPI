@@ -1,16 +1,15 @@
-﻿using Domain.Entities;
-using Domain.Interface.Services.Authentication;
-using Domain.Model.Authentication;
+﻿using Application.Auth;
+using Application.Auth.DTO;
+using Domain.Entities;
 
-namespace Repositories.Authentication.Providers
+namespace Infrastructure.Authentication.Providers;
+
+public class WeChatAuthenticationProvider : IAuthenticationProvider
 {
-    public class WeChatAuthenticationProvider : IAuthenticationProvider
-    {
-        public string Key => "WeChat";
+    public string Key => "WeChat";
 
-        public Task<SysUser?> AuthenticateAsync(AuthenticationRequest request)
-        {
-            return Task.FromResult<SysUser?>(null);
-        }
+    public Task<SysUser?> AuthenticateAsync(AuthenticationRequest request)
+    {
+        throw new NotImplementedException();
     }
 }

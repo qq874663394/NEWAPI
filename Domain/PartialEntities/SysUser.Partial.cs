@@ -2,6 +2,6 @@
 {
     public partial class SysUser
     {
-        public virtual ICollection<SysUserRoleOrg> UserRoleOrgs { get; set; } = new HashSet<SysUserRoleOrg>();
+        public virtual ICollection<SysUserroleorg> UserRoleOrgs { get; set; } = new HashSet<SysUserroleorg>();
     }
 }

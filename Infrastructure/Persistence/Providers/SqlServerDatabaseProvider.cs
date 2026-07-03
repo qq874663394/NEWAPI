@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Application.Providers;
+using Microsoft.EntityFrameworkCore;
 
 namespace Repositories.Persistence.Providers;
 
 public class SqlServerDatabaseProvider
     : IDatabaseProvider
 {
-    public string Name => "SqlServer";
+    public string ProviderName => "SqlServer";
 
     public void Configure(
         DbContextOptionsBuilder options,

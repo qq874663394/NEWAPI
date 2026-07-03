@@ -1,6 +1,4 @@
-﻿using Domain.Interface.IAggregateRoots;
-
-namespace Domain.Interface.UnitOfWorks
+﻿namespace Domain.Interface.UnitOfWorks
 {
     //public interface IUnitOfWork<TAggregateRoot> where TAggregateRoot : IAggregateRoot
     //{

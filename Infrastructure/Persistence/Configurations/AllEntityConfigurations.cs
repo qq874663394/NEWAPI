@@ -1,11 +1,6 @@
 ﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Repositories.Persistence.Configurations
 {
@@ -17,7 +12,7 @@ namespace Repositories.Persistence.Configurations
             // 一对多：用户 -> 用户角色组织
             builder.HasMany(u => u.UserRoleOrgs)
                    .WithOne(uro => uro.User)
-                   .HasForeignKey(uro => uro.User.Code);
+                   .HasForeignKey(uro => uro.UserCode);          // ✅ 直接使用外键属性
         }
     }
 
@@ -26,14 +21,16 @@ namespace Repositories.Persistence.Configurations
         public void Configure(EntityTypeBuilder<SysOrg> builder)
         {
             builder.ToTable("SYS_Org");
-            // 自引用父子
+
+            // 自引用
             builder.HasOne(o => o.Parent)
                    .WithMany(o => o.Children)
                    .HasForeignKey(o => o.ParentCode);
+
             // 一对多：组织 -> 用户角色组织
             builder.HasMany(o => o.UserRoleOrgs)
                    .WithOne(uro => uro.Org)
-                   .HasForeignKey(uro => uro.Org.Code);
+                   .HasForeignKey(uro => uro.OrgCode);   // 直接使用 OrgCode 属性
         }
     }
 
@@ -42,20 +39,22 @@ namespace Repositories.Persistence.Configurations
         public void Configure(EntityTypeBuilder<SysRole> builder)
         {
             builder.ToTable("SYS_Role");
-            // 自引用上级角色
+
+            // 自引用
             builder.HasOne(r => r.SuperiorRole)
                    .WithMany(r => r.InferiorRoles)
                    .HasForeignKey(r => r.SuperiorRoleCode);
+
             // 一对多：角色 -> 用户角色组织
             builder.HasMany(r => r.UserRoleOrgs)
                    .WithOne(uro => uro.Role)
-                   .HasForeignKey(uro => uro.Role.Code);
+                   .HasForeignKey(uro => uro.RoleCode);   // 直接使用外键字段
         }
     }
 
-    public class SysUserRoleOrgConfiguration : IEntityTypeConfiguration<SysUserRoleOrg>
+    public class SysUserRoleOrgConfiguration : IEntityTypeConfiguration<SysUserroleorg>
     {
-        public void Configure(EntityTypeBuilder<SysUserRoleOrg> builder)
+        public void Configure(EntityTypeBuilder<SysUserroleorg> builder)
         {
             builder.ToTable("SYS_UserRoleOrg");
             // 外键已在其他配置中指定，此处不需要额外配置
@@ -78,7 +77,7 @@ namespace Repositories.Persistence.Configurations
             // 一对多：菜单 -> 菜单权限
             builder.HasMany(r => r.MenuPermissions)
                    .WithOne(mp => mp.Route)
-                   .HasForeignKey(mp => mp.Route.Code);
+                   .HasForeignKey(mp => mp.RouteCode);           // ✅
         }
     }
 
@@ -87,70 +86,79 @@ namespace Repositories.Persistence.Configurations
         public void Configure(EntityTypeBuilder<SysButton> builder)
         {
             builder.ToTable("SYS_Button");
-            // 一对多：按钮 -> 按钮权限
+
+
             builder.HasMany(b => b.ButtonPermissions)
-                   .WithOne(bp => bp.Button)
-                   .HasForeignKey(bp => bp.Button.Code);
-            // 一对多：按钮 -> 权限委托
+                   .WithOne(bp => bp.Button)          // 使用你保留的导航属性
+                   .HasForeignKey(bp => bp.ButtonCode); // 外键属性，不是 bp.Button.Code
+
             builder.HasMany(b => b.Delegations)
                    .WithOne(pd => pd.Button)
-                   .HasForeignKey(pd => pd.Button.Code);
+                   .HasForeignKey(pd => pd.ButtonCode); // Delegation 也必须有 ButtonCode 属性
         }
     }
 
-    public class SysMenuPermissionConfiguration : IEntityTypeConfiguration<SysMenuPermission>
+    public class SysMenuPermissionConfiguration : IEntityTypeConfiguration<SysMenupermission>
     {
-        public void Configure(EntityTypeBuilder<SysMenuPermission> builder)
+        public void Configure(EntityTypeBuilder<SysMenupermission> builder)
         {
             builder.ToTable("SYS_MenuPermission");
         }
     }
 
-    public class SysButtonPermissionConfiguration : IEntityTypeConfiguration<SysButtonPermission>
+    public class SysButtonPermissionConfiguration : IEntityTypeConfiguration<SysButtonpermission>
     {
-        public void Configure(EntityTypeBuilder<SysButtonPermission> builder)
+        public void Configure(EntityTypeBuilder<SysButtonpermission> builder)
         {
             builder.ToTable("SYS_ButtonPermission");
         }
     }
 
-    public class SysPermissionDelegationConfiguration : IEntityTypeConfiguration<SysPermissionDelegation>
+    public class SysPermissionDelegationConfiguration : IEntityTypeConfiguration<SysPermissiondelegation>
     {
-        public void Configure(EntityTypeBuilder<SysPermissionDelegation> builder)
+        public void Configure(EntityTypeBuilder<SysPermissiondelegation> builder)
         {
             builder.ToTable("SYS_PermissionDelegation");
+
             builder.HasOne(pd => pd.FromUser)
                    .WithMany()
-                   .HasForeignKey(pd => pd.FromUser.Code);
+                   .HasForeignKey(pd => pd.FromUserCode);  // 直接使用外键属性
+
             builder.HasOne(pd => pd.ToUser)
                    .WithMany()
-                   .HasForeignKey(pd => pd.ToUser.Code);
+                   .HasForeignKey(pd => pd.ToUserCode);
+
             builder.HasOne(pd => pd.Button)
                    .WithMany(b => b.Delegations)
-                   .HasForeignKey(pd => pd.Button.Code);
+                   .HasForeignKey(pd => pd.ButtonCode);
+
             builder.HasOne(pd => pd.Route)
                    .WithMany()
-                   .HasForeignKey(pd => pd.Route.Code);
+                   .HasForeignKey(pd => pd.RouteCode);
         }
     }
 
-    public class SysReportLineConfiguration : IEntityTypeConfiguration<SysReportLine>
+    public class SysReportLineConfiguration : IEntityTypeConfiguration<SysReportline>
     {
-        public void Configure(EntityTypeBuilder<SysReportLine> builder)
+        public void Configure(EntityTypeBuilder<SysReportline> builder)
         {
             builder.ToTable("SYS_ReportLine");
+
             builder.HasOne(rl => rl.User)
                    .WithMany()
-                   .HasForeignKey(rl => rl.User.Code);
+                   .HasForeignKey(rl => rl.UserCode);      // 使用外键字段，不是 rl.User.Code
+
             builder.HasOne(rl => rl.Supervisor)
                    .WithMany()
-                   .HasForeignKey(rl => rl.Supervisor.Code);
+                   .HasForeignKey(rl => rl.SupervisorUserCode);
+
             builder.HasOne(rl => rl.Org)
                    .WithMany()
-                   .HasForeignKey(rl => rl.Org.Code);
+                   .HasForeignKey(rl => rl.OrgCode);
+
             builder.HasOne(rl => rl.Role)
                    .WithMany()
-                   .HasForeignKey(rl => rl.Role.Code);
+                   .HasForeignKey(rl => rl.RoleCode);
         }
     }
 

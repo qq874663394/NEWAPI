@@ -1,141 +1,124 @@
-﻿using Domain.Interface.Services.Authentication;
-using Domain.Model.Authentication;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Application.Auth;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
-namespace Repositories.Authentication.Security
+namespace Infrastructure.Authentication.Security;
+
+public class JwtTokenService : ITokenService
 {
-    public class JwtTokenService : ITokenService
+    private readonly JwtOptions _options;
+
+    public JwtTokenService(IOptions<JwtOptions> options)
     {
-        private readonly JwtOptions _options;
+        _options = options.Value;
+    }
 
-        public JwtTokenService(
-            IOptions<JwtOptions> options)
+    // =========================
+    // 创建 Token
+    // =========================
+    public JwtTokenResult CreateToken(Guid userCode, string userName = "")
+    {
+        // ----- AccessToken（短时效，例如 30 分钟） -----
+        var accessExpires = DateTime.UtcNow.AddMinutes(_options.ExpireMinutes);
+        var accessClaims = new[]
         {
-            _options = options.Value;
-        }
+        new Claim(ClaimTypes.NameIdentifier, userCode.ToString()),
+        new Claim(ClaimTypes.Name, userName ?? string.Empty)
+    };
+        var accessToken = BuildToken(accessClaims, accessExpires);
 
-        public string CreateToken(Guid userId)
+        // ----- RefreshToken（长时效，例如 7 天） -----
+        var refreshExpires = DateTime.UtcNow.AddDays(7);
+        var refreshClaims = new[]
         {
-            var key =
-                Encoding.UTF8.GetBytes(
-                    _options.SecretKey);
+        new Claim(ClaimTypes.NameIdentifier, userCode.ToString()),
+        // 可加一个专用 claim 标识这是刷新令牌
+        new Claim("token_type", "refresh")
+    };
+        var refreshToken = BuildToken(refreshClaims, refreshExpires);
 
-            var claims = new List<Claim>
-            {
-                new Claim(
-                    "userId",
-                    userId.ToString()),
-
-                new Claim(
-                    JwtRegisteredClaimNames.Jti,
-                    Guid.NewGuid().ToString())
-            };
-
-            var token =
-                new JwtSecurityToken(
-                    issuer: _options.Issuer,
-                    audience: _options.Audience,
-                    claims: claims,
-                    expires:
-                        DateTime.UtcNow.AddMinutes(
-                            _options.AccessTokenExpiration),
-                    signingCredentials:
-                        new SigningCredentials(
-                            new SymmetricSecurityKey(key),
-                            SecurityAlgorithms.HmacSha256)
-                );
-
-            return new JwtSecurityTokenHandler()
-                .WriteToken(token);
-        }
-
-        public JwtToken? ValidateToken(string token)
+        return new JwtTokenResult
         {
-            var key =
-                Encoding.UTF8.GetBytes(
-                    _options.SecretKey);
+            AccessToken = accessToken,
+            RefreshToken = refreshToken,
+            ExpireAt = accessExpires
+        };
+    }
 
-            try
-            {
-                var handler =
-                    new JwtSecurityTokenHandler();
+    // 抽取生成 JWT 的公共方法
+    private string BuildToken(Claim[] claims, DateTime expires)
+    {
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Secret));
+        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var token = new JwtSecurityToken(
+            issuer: _options.Issuer,
+            audience: _options.Audience,
+            claims: claims,
+            expires: expires,
+            signingCredentials: creds);
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+    // ========== 验证 Access Token（仅验证并返回用户ID） ==========
+    public Guid? ValidateToken(string token)
+    {
+        var principal = ValidateTokenInternal(token, validateLifetime: true);
+        if (principal == null) return null;
 
-                handler.ValidateToken(
-                    token,
-                    new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidateAudience = true,
-                        ValidateIssuerSigningKey = true,
-                        ValidateLifetime = true,
+        var userId = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        return Guid.TryParse(userId, out var id) ? id : null;
+    }
 
-                        ValidIssuer =
-                            _options.Issuer,
+    // ========== 内部验证方法 ==========
+    private ClaimsPrincipal? ValidateTokenInternal(string token, bool validateLifetime)
+    {
+        var handler = new JwtSecurityTokenHandler();
+        var key = Encoding.UTF8.GetBytes(_options.Secret);
 
-                        ValidAudience =
-                            _options.Audience,
-
-                        IssuerSigningKey =
-                            new SymmetricSecurityKey(key),
-
-                        ClockSkew = TimeSpan.Zero
-                    },
-                    out var validatedToken);
-
-                var jwt =
-                    (JwtSecurityToken)validatedToken;
-
-                return new JwtToken
-                {
-                    UserId = Guid.Parse(
-                        jwt.Claims.First(
-                            x => x.Type == "userId").Value),
-
-                    IsExpired = false
-                };
-            }
-            catch (SecurityTokenExpiredException)
-            {
-                try
-                {
-                    var jwt =
-                        new JwtSecurityTokenHandler()
-                        .ReadJwtToken(token);
-
-                    return new JwtToken
-                    {
-                        UserId = Guid.Parse(
-                            jwt.Claims.First(
-                                x => x.Type == "userId").Value),
-
-                        IsExpired = true
-                    };
-                }
-                catch
-                {
-                    return null;
-                }
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        public string RefreshToken(string token)
+        try
         {
-            var jwt = ValidateToken(token);
-
-            if (jwt == null)
+            var principal = handler.ValidateToken(token, new TokenValidationParameters
             {
-                throw new Exception("Token无效");
-            }
-
-            return CreateToken(jwt.UserId);
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateIssuerSigningKey = true,
+                ValidateLifetime = validateLifetime,       // 按需控制
+                ValidIssuer = _options.Issuer,
+                ValidAudience = _options.Audience,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ClockSkew = TimeSpan.Zero
+            }, out _);
+            return principal;
         }
+        catch
+        {
+            return null;
+        }
+    }
+
+    // =========================
+    // 刷新 Token
+    // =========================
+    public JwtTokenResult RefreshToken(string refreshToken)
+    {
+        // 验证 refresh token
+        var principal = ValidateTokenInternal(refreshToken, validateLifetime: true);
+        if (principal == null)
+            throw new Exception("RefreshToken无效");
+
+        // 检查是否标记为 refresh 类型
+        if (principal.FindFirst("token_type")?.Value != "refresh")
+            throw new Exception("令牌类型不正确");
+
+        var userIdStr = principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if (!Guid.TryParse(userIdStr, out var userId))
+            throw new Exception("RefreshToken 中用户标识无效");
+
+        var userName = principal.FindFirst(ClaimTypes.Name)?.Value ?? "";
+
+        // 签发新的 access + refresh（实现 refresh rotation 可选）
+        return CreateToken(userId, userName);
     }
 }

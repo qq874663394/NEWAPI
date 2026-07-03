@@ -1,26 +1,24 @@
-﻿using Domain.Interface.Services.Authentication;
+﻿using Application.Auth;
 
-namespace Repositories.Authentication
+namespace Infrastructure.Authentication;
+
+public class AuthenticationProviderRegistry : IAuthenticationProviderRegistry
 {
-    public class AuthenticationProviderRegistry
+    private readonly IEnumerable<IAuthenticationProvider> _providers;
+
+    public AuthenticationProviderRegistry(IEnumerable<IAuthenticationProvider> providers)
     {
-        private readonly Dictionary<string, IAuthenticationProvider> _providers;
-
-        public AuthenticationProviderRegistry(
-            IEnumerable<IAuthenticationProvider> providers)
-        {
-            _providers = providers.ToDictionary(x => x.Key);
-        }
-
-        public IAuthenticationProvider Get(string key)
-        {
-            if (!_providers.TryGetValue(key, out var provider))
-            {
-                throw new Exception($"未找到认证插件: {key}");
-            }
-
-            return provider;
-        }
+        _providers = providers;
     }
 
+    public IAuthenticationProvider GetProvider(string key)
+    {
+        var provider = _providers.FirstOrDefault(x =>
+            x.Key.Equals(key, StringComparison.OrdinalIgnoreCase));
+
+        if (provider == null)
+            throw new Exception($"未找到认证提供者: {key}");
+
+        return provider;
+    }
 }

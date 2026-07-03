@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Repositories.Authentication.Security
+namespace Infrastructure.Authentication.Authorization
 {
-    internal class CurrentUserAccessor
+    internal class PermissionRequirement
     {
     }
 }

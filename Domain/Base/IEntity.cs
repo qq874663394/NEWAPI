@@ -1,5 +1,5 @@
 ﻿
-namespace Domain.Interface.IAggregateRoots
+namespace Domain.Base
 {
     /// <summary>
     /// 普通实体类基类

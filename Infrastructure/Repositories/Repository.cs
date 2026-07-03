@@ -1,4 +1,4 @@
-﻿using Domain.Interface.IAggregateRoots;
+﻿using Domain.Base;
 using Domain.Interface.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Repositories.DbContexts;

@@ -8,6 +8,8 @@
 
   <ItemGroup>
     <Folder Include="Enums\" />
+    <Folder Include="Interface\Services\" />
+    <Folder Include="Model\" />
   </ItemGroup>
 
   <ItemGroup>

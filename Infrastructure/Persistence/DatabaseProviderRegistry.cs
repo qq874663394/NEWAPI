@@ -1,31 +1,28 @@
-﻿using Repositories.Persistence.Providers;
+﻿using Application.Providers;
+using System.Collections.Concurrent;
 
 namespace Repositories.Persistence;
 
 public class DatabaseProviderRegistry
 {
-    private readonly IEnumerable<IDatabaseProvider> _providers;
+    private readonly ConcurrentDictionary<string, IDatabaseProvider> _providers;
 
     public DatabaseProviderRegistry(
         IEnumerable<IDatabaseProvider> providers)
     {
-        _providers = providers;
+        _providers = new ConcurrentDictionary<string, IDatabaseProvider>(
+            providers.ToDictionary(
+                x => x.ProviderName,
+                StringComparer.OrdinalIgnoreCase));
     }
 
     public IDatabaseProvider GetProvider(
         string providerName)
     {
-        var provider = _providers.FirstOrDefault(x =>
-            x.Name.Equals(
-                providerName,
-                StringComparison.OrdinalIgnoreCase));
+        if (_providers.TryGetValue(providerName, out var provider))
+            return provider;
 
-        if (provider == null)
-        {
-            throw new Exception(
-                $"数据库提供程序[{providerName}]不存在");
-        }
-
-        return provider;
+        throw new NotSupportedException(
+            $"不支持数据库提供程序 [{providerName}]。");
     }
 }

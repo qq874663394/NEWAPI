@@ -1,6 +1,6 @@
 ﻿namespace Domain.Entities
 {
-    public partial class SysPermissionDelegation
+    public partial class SysPermissiondelegation
     {
         public virtual SysUser FromUser { get; set; }
         public virtual SysUser ToUser { get; set; }

@@ -1,10 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Repositories.Persistence.Providers;
+namespace Application.Providers;
 
 public interface IDatabaseProvider
 {
-    string Name { get; }
+    string ProviderName { get; }
 
     void Configure(
         DbContextOptionsBuilder options,

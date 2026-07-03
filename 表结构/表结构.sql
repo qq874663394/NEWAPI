@@ -355,349 +355,325 @@ CREATE TABLE `SYS_Log` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='通用日志表';
 
 
+-- ======================================================
+-- 测试数据（Code 全部使用 UUID，保留关联性）
+-- ======================================================
+
+-- 定义角色 UUID
+SET @role_duty = UUID();
+SET @role_group = UUID();
+SET @role_class = UUID();
+SET @role_leader = UUID();
+SET @role_section = UUID();
+SET @role_manager = UUID();
+SET @role_head = UUID();
+SET @role_gm = UUID();
+SET @role_auditor = UUID();
+SET @role_admin = UUID();
+
+-- 定义组织 UUID
+SET @org_comp = UUID();
+SET @org_hq1 = UUID();
+SET @org_depSYS_mold = UUID();
+SET @org_section_mold = UUID();
+SET @org_class_mold1 = UUID();
+SET @org_group_mold1a = UUID();
+SET @org_virtual_a = UUID();
+
+-- 定义用户 UUID
+SET @user_sys = UUID();
+SET @user_log = UUID();
+SET @user_gm = UUID();
+SET @user_head = UUID();
+SET @user_manager = UUID();
+SET @user_section = UUID();
+SET @user_class = UUID();
+SET @user_group = UUID();
+SET @user_duty_normal = UUID();
+SET @user_leader_zhu = UUID();
+SET @user_duty_luo = UUID();
+
+-- 定义一级菜单 UUID
+SET @route_system = UUID();
+SET @route_part = UUID();
+SET @route_mold = UUID();
+SET @route_delivery_change = UUID();
+SET @route_dependency_termination = UUID();
+SET @route_supplier_process = UUID();
+
+-- 定义子菜单 UUID
+SET @route_system_dict = UUID();
+SET @route_system_user = UUID();
+SET @route_system_menu = UUID();
+SET @route_system_log = UUID();
+SET @route_system_role = UUID();
+SET @route_system_button = UUID();
+SET @route_system_org = UUID();
+SET @route_part_kaifeng = UUID();
+SET @route_part_quotation = UUID();
+SET @route_part_supplier = UUID();
+SET @route_mold_quotation = UUID();
+SET @route_mold_supplier = UUID();
+SET @route_mold_kaifeng = UUID();
+SET @route_delivery_change_approved = UUID();
+SET @route_delivery_change_pending = UUID();
+SET @route_dep_ter_approved = UUID();
+SET @route_dep_ter_pending = UUID();
+SET @route_supplier_process_history = UUID();
+SET @route_supplier_process_quotation = UUID();
 
 -- ======================================================
--- 测试数据
--- ======================================================
-
 -- 1. 角色数据（含层级）
+-- ======================================================
 INSERT INTO `SYS_Role` (`Code`, `Name`, `SuperiorRoleCode`, `Description`, `Level`, `IsEnable`, `CreateTime`) VALUES
-('role_duty', '担当', NULL, '普通员工', 1, 1, NOW()),
-('role_group', '组长', 'role_duty', '小组负责人', 2, 1, NOW()),
-('role_class', '班长', 'role_group', '班负责人', 3, 1, NOW()),
-('role_leader', 'Leader', 'role_section', '虚拟组负责人', 3, 1, NOW()),
-('role_section', '课长', 'role_manager', '课负责人', 4, 1, NOW()),
-('role_manager', '部长', 'role_head', '部负责人', 5, 1, NOW()),
-('role_head', '本部长', 'role_gm', '本部负责人', 6, 1, NOW()),
-('role_gm', '总经理', NULL, '公司总经理', 7, 1, NOW()),
-('role_auditor', '日志审计员', NULL, '等保审计', 99, 1, NOW()),
-('role_admin', '管理员', NULL, '系统管理员', 100, 1, NOW());
+(@role_duty, '担当', @role_group, '普通员工', 1, 1, NOW()),
+(@role_group, '组长', @role_class, '小组负责人', 2, 1, NOW()),
+(@role_class, '班长', @role_section, '班负责人', 3, 1, NOW()),
+(@role_leader, 'Leader', @role_section, '虚拟组负责人', 3, 1, NOW()),
+(@role_section, '课长', @role_manager, '课负责人', 4, 1, NOW()),
+(@role_manager, '部长', @role_head, '部负责人', 5, 1, NOW()),
+(@role_head, '本部长', @role_gm, '本部负责人', 6, 1, NOW()),
+(@role_gm, '总经理', NULL, '公司总经理', 7, 1, NOW()),
+(@role_auditor, '日志审计员', NULL, '等保审计', 99, 1, NOW()),
+(@role_admin, '管理员', NULL, '系统管理员', 100, 1, NOW());
 
--- 更新上级角色引用
-UPDATE SYS_Role SET SuperiorRoleCode = 'role_group' WHERE Code = 'role_duty';
-UPDATE SYS_Role SET SuperiorRoleCode = 'role_class' WHERE Code = 'role_group';
-UPDATE SYS_Role SET SuperiorRoleCode = 'role_section' WHERE Code = 'role_class';
-UPDATE SYS_Role SET SuperiorRoleCode = 'role_section' WHERE Code = 'role_leader';
-UPDATE SYS_Role SET SuperiorRoleCode = 'role_manager' WHERE Code = 'role_section';
-UPDATE SYS_Role SET SuperiorRoleCode = 'role_head' WHERE Code = 'role_manager';
-UPDATE SYS_Role SET SuperiorRoleCode = 'role_gm' WHERE Code = 'role_head';
-
--- 2. 组织架构数据（仅核心示例，可按需扩展）
+-- 2. 组织架构数据
 INSERT INTO `SYS_Org` (`Code`, `ParentCode`, `Name`, `OrgType`, `Path`, `Level`, `Sort`, `IsVirtual`, `IsEnable`, `CreateTime`) VALUES
-('org_comp', NULL, '东方集团', '公司', '/org_comp/', 0, 1, 0, 1, NOW()),
-('org_hq1', 'org_comp', 'P・IJS・MS事业推进本部', '本部', '/org_comp/org_hq1/', 1, 1, 0, 1, NOW()),
-('org_depSYS_mold', 'org_hq1', '模具制造部', '部', '/org_comp/org_hq1/org_depSYS_mold/', 2, 1, 0, 1, NOW()),
-('org_section_mold', 'org_depSYS_mold', '模具制造课', '课', '/org_comp/org_hq1/org_depSYS_mold/org_section_mold/', 3, 1, 0, 1, NOW()),
-('org_class_mold1', 'org_section_mold', '模具一班', '班', '/org_comp/org_hq1/org_depSYS_mold/org_section_mold/org_class_mold1/', 4, 1, 0, 1, NOW()),
-('org_group_mold1a', 'org_class_mold1', '模具一组', '组', '/org_comp/org_hq1/org_depSYS_mold/org_section_mold/org_class_mold1/org_group_mold1a/', 5, 1, 0, 1, NOW()),
-('org_virtual_a', 'org_section_mold', '虚拟项目组A', '虚拟组', '/org_comp/org_hq1/org_depSYS_mold/org_section_mold/org_virtual_a/', 4, 99, 1, 1, NOW());
+(@org_comp, NULL, '东方集团', '公司', CONCAT('/', @org_comp, '/'), 0, 1, 0, 1, NOW()),
+(@org_hq1, @org_comp, 'P・IJS・MS事业推进本部', '本部', CONCAT('/', @org_comp, '/', @org_hq1, '/'), 1, 1, 0, 1, NOW()),
+(@org_depSYS_mold, @org_hq1, '模具制造部', '部', CONCAT('/', @org_comp, '/', @org_hq1, '/', @org_depSYS_mold, '/'), 2, 1, 0, 1, NOW()),
+(@org_section_mold, @org_depSYS_mold, '模具制造课', '课', CONCAT('/', @org_comp, '/', @org_hq1, '/', @org_depSYS_mold, '/', @org_section_mold, '/'), 3, 1, 0, 1, NOW()),
+(@org_class_mold1, @org_section_mold, '模具一班', '班', CONCAT('/', @org_comp, '/', @org_hq1, '/', @org_depSYS_mold, '/', @org_section_mold, '/', @org_class_mold1, '/'), 4, 1, 0, 1, NOW()),
+(@org_group_mold1a, @org_class_mold1, '模具一组', '组', CONCAT('/', @org_comp, '/', @org_hq1, '/', @org_depSYS_mold, '/', @org_section_mold, '/', @org_class_mold1, '/', @org_group_mold1a, '/'), 5, 1, 0, 1, NOW()),
+(@org_virtual_a, @org_section_mold, '虚拟项目组A', '虚拟组', CONCAT('/', @org_comp, '/', @org_hq1, '/', @org_depSYS_mold, '/', @org_section_mold, '/', @org_virtual_a, '/'), 4, 99, 1, 1, NOW());
 
 -- 3. 用户数据
 INSERT INTO `SYS_User` (`Code`, `Name`, `FullName`, `Email`, `Phone`, `IsActive`, `IsEnable`, `CreateTime`) VALUES
-('user_sys', 'sys_user', '系统管理员', 'sys@dongfang.com', '13800000000', 1, 1, NOW()),
-('user_log', 'log', '日志审计员', 'log@dongfang.com', '13800000001', 1, 1, NOW()),
-('user_gm', 'zhang_gm', '张总经理', 'gm@dongfang.com', '13800000010', 1, 1, NOW()),
-('user_head', 'li_head', '李本部长', 'li.head@dongfang.com', '13800000011', 1, 1, NOW()),
-('user_manager', 'feng_manager', '冯部长', 'feng.manager@dongfang.com', '13800000020', 1, 1, NOW()),
-('user_section', 'jiang_section', '蒋课长', 'jiang.section@dongfang.com', '13800000030', 1, 1, NOW()),
-('user_class', 'xu_class', '许班长', 'xu.class@dongfang.com', '13800000040', 1, 1, NOW()),
-('user_group', 'shi_group', '施组长', 'shi.group@dongfang.com', '13800000050', 1, 1, NOW()),
-('user_duty_normal', 'liu_duty', '刘担当', 'liu.duty@dongfang.com', '13800000060', 1, 1, NOW()),
-('user_leader_zhu', 'zhu_leader', '朱Leader', 'zhu.leader@dongfang.com', '13800000070', 1, 1, NOW()),
-('user_duty_luo', 'luo_duty', '罗担当', 'luo.duty@dongfang.com', '13800000080', 1, 1, NOW());
+(@user_sys, 'sys_user', '系统管理员', 'sys@dongfang.com', '13800000000', 1, 1, NOW()),
+(@user_log, 'log', '日志审计员', 'log@dongfang.com', '13800000001', 1, 1, NOW()),
+(@user_gm, 'zhang_gm', '张总经理', 'gm@dongfang.com', '13800000010', 1, 1, NOW()),
+(@user_head, 'li_head', '李本部长', 'li.head@dongfang.com', '13800000011', 1, 1, NOW()),
+(@user_manager, 'feng_manager', '冯部长', 'feng.manager@dongfang.com', '13800000020', 1, 1, NOW()),
+(@user_section, 'jiang_section', '蒋课长', 'jiang.section@dongfang.com', '13800000030', 1, 1, NOW()),
+(@user_class, 'xu_class', '许班长', 'xu.class@dongfang.com', '13800000040', 1, 1, NOW()),
+(@user_group, 'shi_group', '施组长', 'shi.group@dongfang.com', '13800000050', 1, 1, NOW()),
+(@user_duty_normal, 'liu_duty', '刘担当', 'liu.duty@dongfang.com', '13800000060', 1, 1, NOW()),
+(@user_leader_zhu, 'zhu_leader', '朱Leader', 'zhu.leader@dongfang.com', '13800000070', 1, 1, NOW()),
+(@user_duty_luo, 'luo_duty', '罗担当', 'luo.duty@dongfang.com', '13800000080', 1, 1, NOW());
 
 -- 4. 用户角色分配
 INSERT INTO `SYS_UserRoleOrg` (`Code`, `UserCode`, `RoleCode`, `OrgCode`, `IsPrimary`, `IsEnable`, `CreateTime`) VALUES
-(UUID(), 'user_sys', 'role_admin', 'org_comp', 1, 1, NOW()),
-(UUID(), 'user_log', 'role_auditor', 'org_comp', 1, 1, NOW()),
-(UUID(), 'user_gm', 'role_gm', 'org_comp', 1, 1, NOW()),
-(UUID(), 'user_head', 'role_head', 'org_hq1', 1, 1, NOW()),
-(UUID(), 'user_manager', 'role_manager', 'org_depSYS_mold', 1, 1, NOW()),
-(UUID(), 'user_section', 'role_section', 'org_section_mold', 1, 1, NOW()),
-(UUID(), 'user_class', 'role_class', 'org_class_mold1', 1, 1, NOW()),
-(UUID(), 'user_group', 'role_group', 'org_group_mold1a', 1, 1, NOW()),
-(UUID(), 'user_duty_normal', 'role_duty', 'org_group_mold1a', 1, 1, NOW()),
-(UUID(), 'user_leader_zhu', 'role_leader', 'org_virtual_a', 1, 1, NOW()),
-(UUID(), 'user_duty_luo', 'role_duty', 'org_virtual_a', 1, 1, NOW());
+(UUID(), @user_sys, @role_admin, @org_comp, 1, 1, NOW()),
+(UUID(), @user_log, @role_auditor, @org_comp, 1, 1, NOW()),
+(UUID(), @user_gm, @role_gm, @org_comp, 1, 1, NOW()),
+(UUID(), @user_head, @role_head, @org_hq1, 1, 1, NOW()),
+(UUID(), @user_manager, @role_manager, @org_depSYS_mold, 1, 1, NOW()),
+(UUID(), @user_section, @role_section, @org_section_mold, 1, 1, NOW()),
+(UUID(), @user_class, @role_class, @org_class_mold1, 1, 1, NOW()),
+(UUID(), @user_group, @role_group, @org_group_mold1a, 1, 1, NOW()),
+(UUID(), @user_duty_normal, @role_duty, @org_group_mold1a, 1, 1, NOW()),
+(UUID(), @user_leader_zhu, @role_leader, @org_virtual_a, 1, 1, NOW()),
+(UUID(), @user_duty_luo, @role_duty, @org_virtual_a, 1, 1, NOW());
 
--- 5. 菜单数据（示例模块）
+-- 5. 菜单数据
 -- 一级菜单
 INSERT INTO `SYS_Route` (`Code`, `ParentCode`, `Path`, `Component`, `Name`, `Hidden`, `MetaTitle`, `MetaIcon`, `Sort`, `IsEnable`, `CreateTime`) VALUES
-('route_system', NULL, '/system', 'layout/Layout', 'System', 0, '系统管理', 'setting', 10, 1, NOW()),
-('route_part', NULL, '/part', 'layout/Layout', 'Part', 0, '部品管理', 'component', 20, 1, NOW()),
-('route_mold', NULL, '/mold', 'layout/Layout', 'Mold', 0, '模具管理', 'tools', 30, 1, NOW()),
-('route_delivery_change', NULL, '/delivery-change', 'layout/Layout', 'DeliveryChange', 0, '纳期变更', 'calendar', 40, 1, NOW()),
-('route_dependency_termination', NULL, '/dependency-termination', 'layout/Layout', 'DependencyTermination', 0, '依赖终止', 'link', 50, 1, NOW()),
-('route_supplier_process', NULL, '/supplier-process', 'layout/Layout', 'SupplierProcess', 0, '供应商处理', 'user', 60, 1, NOW());
+(@route_system, NULL, '/system', 'layout/Layout', 'System', 0, '系统管理', 'setting', 10, 1, NOW()),
+(@route_part, NULL, '/part', 'layout/Layout', 'Part', 0, '部品管理', 'component', 20, 1, NOW()),
+(@route_mold, NULL, '/mold', 'layout/Layout', 'Mold', 0, '模具管理', 'tools', 30, 1, NOW()),
+(@route_delivery_change, NULL, '/delivery-change', 'layout/Layout', 'DeliveryChange', 0, '纳期变更', 'calendar', 40, 1, NOW()),
+(@route_dependency_termination, NULL, '/dependency-termination', 'layout/Layout', 'DependencyTermination', 0, '依赖终止', 'link', 50, 1, NOW()),
+(@route_supplier_process, NULL, '/supplier-process', 'layout/Layout', 'SupplierProcess', 0, '供应商处理', 'user', 60, 1, NOW());
 
 -- 系统管理子菜单
 INSERT INTO `SYS_Route` (`Code`, `ParentCode`, `Path`, `Component`, `Name`, `Hidden`, `MetaTitle`, `MetaIcon`, `Sort`, `IsEnable`, `CreateTime`) VALUES
-('route_system_dict', 'route_system', 'dict', 'views/system/dict/index', 'Dict', 0, '字典管理', 'list', 1, 1, NOW()),
-('route_system_user', 'route_system', 'user', 'views/system/user/index', 'User', 0, '用户管理', 'user', 2, 1, NOW()),
-('route_system_menu', 'route_system', 'menu', 'views/system/menu/index', 'Menu', 0, '菜单管理', 'menu', 3, 1, NOW()),
-('route_system_log', 'route_system', 'log', 'views/system/log/index', 'Log', 0, '日志管理', 'document', 4, 1, NOW()),
-('route_system_role', 'route_system', 'role', 'views/system/role/index', 'Role', 0, '角色管理', 'role', 5, 1, NOW()),
-('route_system_button', 'route_system', 'button', 'views/system/button/index', 'Button', 0, '按钮管理', 'edit', 6, 1, NOW()),
-('route_system_org', 'route_system', 'org', 'views/system/org/index', 'Org', 0, '组织架构管理', 'tree', 7, 1, NOW());
+(@route_system_dict, @route_system, 'dict', 'views/system/dict/index', 'Dict', 0, '字典管理', 'list', 1, 1, NOW()),
+(@route_system_user, @route_system, 'user', 'views/system/user/index', 'User', 0, '用户管理', 'user', 2, 1, NOW()),
+(@route_system_menu, @route_system, 'menu', 'views/system/menu/index', 'Menu', 0, '菜单管理', 'menu', 3, 1, NOW()),
+(@route_system_log, @route_system, 'log', 'views/system/log/index', 'Log', 0, '日志管理', 'document', 4, 1, NOW()),
+(@route_system_role, @route_system, 'role', 'views/system/role/index', 'Role', 0, '角色管理', 'role', 5, 1, NOW()),
+(@route_system_button, @route_system, 'button', 'views/system/button/index', 'Button', 0, '按钮管理', 'edit', 6, 1, NOW()),
+(@route_system_org, @route_system, 'org', 'views/system/org/index', 'Org', 0, '组织架构管理', 'tree', 7, 1, NOW());
 
 -- 部品管理子菜单
 INSERT INTO `SYS_Route` (`Code`, `ParentCode`, `Path`, `Component`, `Name`, `Hidden`, `MetaTitle`, `MetaIcon`, `Sort`, `IsEnable`, `CreateTime`) VALUES
-('route_part_kaifeng', 'route_part', 'kaifeng', 'views/part/kaifeng/index', 'PartKaifeng', 0, '开封', 'open', 1, 1, NOW()),
-('route_part_quotation', 'route_part', 'quotation', 'views/part/quotation/index', 'PartQuotation', 0, '报价依赖', 'money', 2, 1, NOW()),
-('route_part_supplier', 'route_part', 'supplier', 'views/part/supplier/index', 'PartSupplier', 0, '供应商管理', 'office-building', 3, 1, NOW());
+(@route_part_kaifeng, @route_part, 'kaifeng', 'views/part/kaifeng/index', 'PartKaifeng', 0, '开封', 'open', 1, 1, NOW()),
+(@route_part_quotation, @route_part, 'quotation', 'views/part/quotation/index', 'PartQuotation', 0, '报价依赖', 'money', 2, 1, NOW()),
+(@route_part_supplier, @route_part, 'supplier', 'views/part/supplier/index', 'PartSupplier', 0, '供应商管理', 'office-building', 3, 1, NOW());
 
 -- 模具管理子菜单
 INSERT INTO `SYS_Route` (`Code`, `ParentCode`, `Path`, `Component`, `Name`, `Hidden`, `MetaTitle`, `MetaIcon`, `Sort`, `IsEnable`, `CreateTime`) VALUES
-('route_mold_quotation', 'route_mold', 'quotation', 'views/mold/quotation/index', 'MoldQuotation', 0, '报价依赖', 'money', 1, 1, NOW()),
-('route_mold_supplier', 'route_mold', 'supplier', 'views/mold/supplier/index', 'MoldSupplier', 0, '供应商管理', 'office-building', 2, 1, NOW()),
-('route_mold_kaifeng', 'route_mold', 'kaifeng', 'views/mold/kaifeng/index', 'MoldKaifeng', 0, '开封', 'open', 3, 1, NOW());
+(@route_mold_quotation, @route_mold, 'quotation', 'views/mold/quotation/index', 'MoldQuotation', 0, '报价依赖', 'money', 1, 1, NOW()),
+(@route_mold_supplier, @route_mold, 'supplier', 'views/mold/supplier/index', 'MoldSupplier', 0, '供应商管理', 'office-building', 2, 1, NOW()),
+(@route_mold_kaifeng, @route_mold, 'kaifeng', 'views/mold/kaifeng/index', 'MoldKaifeng', 0, '开封', 'open', 3, 1, NOW());
 
 -- 纳期变更子菜单
 INSERT INTO `SYS_Route` (`Code`, `ParentCode`, `Path`, `Component`, `Name`, `Hidden`, `MetaTitle`, `MetaIcon`, `Sort`, `IsEnable`, `CreateTime`) VALUES
-('route_delivery_change_approved', 'route_delivery_change', 'approved', 'views/delivery-change/approved/index', 'DeliveryChangeApproved', 0, '已审核', 'success', 1, 1, NOW()),
-('route_delivery_change_pending', 'route_delivery_change', 'pending', 'views/delivery-change/pending/index', 'DeliveryChangePending', 0, '待审核', 'warning', 2, 1, NOW());
+(@route_delivery_change_approved, @route_delivery_change, 'approved', 'views/delivery-change/approved/index', 'DeliveryChangeApproved', 0, '已审核', 'success', 1, 1, NOW()),
+(@route_delivery_change_pending, @route_delivery_change, 'pending', 'views/delivery-change/pending/index', 'DeliveryChangePending', 0, '待审核', 'warning', 2, 1, NOW());
 
 -- 依赖终止子菜单
 INSERT INTO `SYS_Route` (`Code`, `ParentCode`, `Path`, `Component`, `Name`, `Hidden`, `MetaTitle`, `MetaIcon`, `Sort`, `IsEnable`, `CreateTime`) VALUES
-('route_dep_ter_approved', 'route_dependency_termination', 'approved', 'views/dependency-termination/approved/index', 'DependencyTerminationApproved', 0, '已审核', 'success', 1, 1, NOW()),
-('route_dep_ter_pending', 'route_dependency_termination', 'pending', 'views/dependency-termination/pending/index', 'DependencyTerminationPending', 0, '待审核', 'warning', 2, 1, NOW());
+(@route_dep_ter_approved, @route_dependency_termination, 'approved', 'views/dependency-termination/approved/index', 'DependencyTerminationApproved', 0, '已审核', 'success', 1, 1, NOW()),
+(@route_dep_ter_pending, @route_dependency_termination, 'pending', 'views/dependency-termination/pending/index', 'DependencyTerminationPending', 0, '待审核', 'warning', 2, 1, NOW());
 
 -- 供应商处理子菜单
 INSERT INTO `SYS_Route` (`Code`, `ParentCode`, `Path`, `Component`, `Name`, `Hidden`, `MetaTitle`, `MetaIcon`, `Sort`, `IsEnable`, `CreateTime`) VALUES
-('route_supplier_process_history', 'route_supplier_process', 'history', 'views/supplier-process/history/index', 'SupplierProcessHistory', 0, '历史报价', 'time', 1, 1, NOW()),
-('route_supplier_process_quotation', 'route_supplier_process', 'quotation', 'views/supplier-process/quotation/index', 'SupplierProcessQuotation', 0, '报价', 'money', 2, 1, NOW());
+(@route_supplier_process_history, @route_supplier_process, 'history', 'views/supplier-process/history/index', 'SupplierProcessHistory', 0, '历史报价', 'time', 1, 1, NOW()),
+(@route_supplier_process_quotation, @route_supplier_process, 'quotation', 'views/supplier-process/quotation/index', 'SupplierProcessQuotation', 0, '报价', 'money', 2, 1, NOW());
 
--- 6. 按钮数据（示例）
--- 通用函数：为指定菜单批量插入按钮
+-- 6. 按钮数据（使用存储过程批量生成）
 DELIMITER $$
 CREATE PROCEDURE InsertButtonsForMenu(IN p_RouteCode CHAR(36))
 BEGIN
-    -- 新增
     INSERT INTO SYS_Button (Code, ButtonKey, RouteCode, Name, Event, StyleType, Type, Sort, IsEnable, CreateTime)
     VALUES (UUID(), 'Add', p_RouteCode, '新增', 'handleAdd', 'primary', 1, 1, 1, NOW());
-    -- 编辑
     INSERT INTO SYS_Button (Code, ButtonKey, RouteCode, Name, Event, StyleType, Type, Sort, IsEnable, CreateTime)
     VALUES (UUID(), 'Edit', p_RouteCode, '编辑', 'handleEdit', 'primary', 2, 2, 1, NOW());
-    -- 删除
     INSERT INTO SYS_Button (Code, ButtonKey, RouteCode, Name, Event, StyleType, Type, Sort, IsEnable, CreateTime)
     VALUES (UUID(), 'Delete', p_RouteCode, '删除', 'handleDelete', 'danger', 2, 3, 1, NOW());
-    -- 查看
     INSERT INTO SYS_Button (Code, ButtonKey, RouteCode, Name, Event, StyleType, Type, Sort, IsEnable, CreateTime)
     VALUES (UUID(), 'View', p_RouteCode, '查看', 'handleView', 'info', 1, 4, 1, NOW());
-    -- 导出
     INSERT INTO SYS_Button (Code, ButtonKey, RouteCode, Name, Event, StyleType, Type, Sort, IsEnable, CreateTime)
     VALUES (UUID(), 'Export', p_RouteCode, '导出', 'handleExport', 'default', 1, 5, 1, NOW());
 END$$
 DELIMITER ;
 
--- 为每个叶子菜单调用存储过程（注意：系统管理的子菜单也是叶子）
-CALL InsertButtonsForMenu('route_system_dict');
-CALL InsertButtonsForMenu('route_system_user');
-CALL InsertButtonsForMenu('route_system_menu');
-CALL InsertButtonsForMenu('route_system_log');
-CALL InsertButtonsForMenu('route_system_role');
-CALL InsertButtonsForMenu('route_system_button');
-CALL InsertButtonsForMenu('route_system_org');
-CALL InsertButtonsForMenu('route_part_kaifeng');
-CALL InsertButtonsForMenu('route_part_quotation');
-CALL InsertButtonsForMenu('route_part_supplier');
-CALL InsertButtonsForMenu('route_mold_quotation');
-CALL InsertButtonsForMenu('route_mold_supplier');
-CALL InsertButtonsForMenu('route_mold_kaifeng');
-CALL InsertButtonsForMenu('route_delivery_change_approved');
-CALL InsertButtonsForMenu('route_delivery_change_pending');
-CALL InsertButtonsForMenu('route_dep_ter_approved');
-CALL InsertButtonsForMenu('route_dep_ter_pending');
-CALL InsertButtonsForMenu('route_supplier_process_history');
-CALL InsertButtonsForMenu('route_supplier_process_quotation');
+-- 为所有叶子菜单生成基础按钮
+CALL InsertButtonsForMenu(@route_system_dict);
+CALL InsertButtonsForMenu(@route_system_user);
+CALL InsertButtonsForMenu(@route_system_menu);
+CALL InsertButtonsForMenu(@route_system_log);
+CALL InsertButtonsForMenu(@route_system_role);
+CALL InsertButtonsForMenu(@route_system_button);
+CALL InsertButtonsForMenu(@route_system_org);
+CALL InsertButtonsForMenu(@route_part_kaifeng);
+CALL InsertButtonsForMenu(@route_part_quotation);
+CALL InsertButtonsForMenu(@route_part_supplier);
+CALL InsertButtonsForMenu(@route_mold_quotation);
+CALL InsertButtonsForMenu(@route_mold_supplier);
+CALL InsertButtonsForMenu(@route_mold_kaifeng);
+CALL InsertButtonsForMenu(@route_delivery_change_approved);
+CALL InsertButtonsForMenu(@route_delivery_change_pending);
+CALL InsertButtonsForMenu(@route_dep_ter_approved);
+CALL InsertButtonsForMenu(@route_dep_ter_pending);
+CALL InsertButtonsForMenu(@route_supplier_process_history);
+CALL InsertButtonsForMenu(@route_supplier_process_quotation);
 
+-- 为特殊菜单添加额外按钮（提交/审核等）
+INSERT INTO SYS_Button (Code, ButtonKey, RouteCode, Name, Event, StyleType, Type, Sort, IsEnable, CreateTime)
+VALUES (UUID(), 'Submit', @route_part_quotation, '提交', 'handleSubmit', 'success', 1, 6, 1, NOW()),
+       (UUID(), 'Approve', @route_part_quotation, '审核', 'handleApprove', 'warning', 2, 7, 1, NOW()),
+       (UUID(), 'Submit', @route_mold_quotation, '提交', 'handleSubmit', 'success', 1, 6, 1, NOW()),
+       (UUID(), 'Approve', @route_mold_quotation, '审核', 'handleApprove', 'warning', 2, 7, 1, NOW()),
+       (UUID(), 'Approve', @route_delivery_change_pending, '通过', 'handleApprove', 'success', 1, 1, 1, NOW()),
+       (UUID(), 'Reject', @route_delivery_change_pending, '驳回', 'handleReject', 'danger', 1, 2, 1, NOW()),
+       (UUID(), 'Approve', @route_dep_ter_pending, '通过', 'handleApprove', 'success', 1, 1, 1, NOW()),
+       (UUID(), 'Reject', @route_dep_ter_pending, '驳回', 'handleReject', 'danger', 1, 2, 1, NOW()),
+       (UUID(), 'SubmitQuotation', @route_supplier_process_quotation, '提交报价', 'handleSubmitQuotation', 'primary', 1, 1, 1, NOW());
 
--- 对于“报价依赖”和“纳期变更”等流程性菜单，额外添加提交、审核按钮
--- 部品报价依赖额外按钮
-INSERT INTO SYS_Button (Code, ButtonKey, RouteCode, Name, Event, StyleType, Type, Sort, IsEnable, CreateTime)
-VALUES (UUID(), 'Submit', 'route_part_quotation', '提交', 'handleSubmit', 'success', 1, 6, 1, NOW());
-INSERT INTO SYS_Button (Code, ButtonKey, RouteCode, Name, Event, StyleType, Type, Sort, IsEnable, CreateTime)
-VALUES (UUID(), 'Approve', 'route_part_quotation', '审核', 'handleApprove', 'warning', 2, 7, 1, NOW());
-
--- 模具报价依赖额外按钮
-INSERT INTO SYS_Button (Code, ButtonKey, RouteCode, Name, Event, StyleType, Type, Sort, IsEnable, CreateTime)
-VALUES (UUID(), 'Submit', 'route_mold_quotation', '提交', 'handleSubmit', 'success', 1, 6, 1, NOW());
-INSERT INTO SYS_Button (Code, ButtonKey, RouteCode, Name, Event, StyleType, Type, Sort, IsEnable, CreateTime)
-VALUES (UUID(), 'Approve', 'route_mold_quotation', '审核', 'handleApprove', 'warning', 2, 7, 1, NOW());
-
--- 纳期变更待审核页面的审核按钮
-INSERT INTO SYS_Button (Code, ButtonKey, RouteCode, Name, Event, StyleType, Type, Sort, IsEnable, CreateTime)
-VALUES (UUID(), 'Approve', 'route_delivery_change_pending', '通过', 'handleApprove', 'success', 1, 1, 1, NOW());
-INSERT INTO SYS_Button (Code, ButtonKey, RouteCode, Name, Event, StyleType, Type, Sort, IsEnable, CreateTime)
-VALUES (UUID(), 'Reject', 'route_delivery_change_pending', '驳回', 'handleReject', 'danger', 1, 2, 1, NOW());
-
--- 依赖终止待审核页面的审核按钮
-INSERT INTO SYS_Button (Code, ButtonKey, RouteCode, Name, Event, StyleType, Type, Sort, IsEnable, CreateTime)
-VALUES (UUID(), 'Approve', 'route_dep_ter_pending', '通过', 'handleApprove', 'success', 1, 1, 1, NOW());
-INSERT INTO SYS_Button (Code, ButtonKey, RouteCode, Name, Event, StyleType, Type, Sort, IsEnable, CreateTime)
-VALUES (UUID(), 'Reject', 'route_dep_ter_pending', '驳回', 'handleReject', 'danger', 1, 2, 1, NOW());
-
--- 供应商处理报价页面添加提交按钮
-INSERT INTO SYS_Button (Code, ButtonKey, RouteCode, Name, Event, StyleType, Type, Sort, IsEnable, CreateTime)
-VALUES (UUID(), 'SubmitQuotation', 'route_supplier_process_quotation', '提交报价', 'handleSubmitQuotation', 'primary', 1, 1, 1, NOW());
-
--- 删除存储过程
 DROP PROCEDURE IF EXISTS InsertButtonsForMenu;
 
--- 7. 菜单权限分配（角色授权示例）
--- 1. 总经理（role_gm）：所有菜单权限
+-- 7. 菜单权限分配（基于上面生成的 UUID 变量）
+
+-- 1) 总经理（所有菜单 + 所有按钮）
 INSERT INTO SYS_MenuPermission (Code, RouteCode, SubjectType, SubjectCode, IsGranted, CreateTime)
-SELECT UUID(), r.Code, 'Role', 'role_gm', 1, NOW()
+SELECT UUID(), r.Code, 'Role', @role_gm, 1, NOW()
 FROM SYS_Route r WHERE r.IsEnable = 1;
 
--- 总经理拥有所有按钮权限（通过角色授权）
 INSERT INTO SYS_ButtonPermission (Code, ButtonCode, SubjectType, SubjectCode, IsGranted, CreateTime)
-SELECT UUID(), b.Code, 'Role', 'role_gm', 1, NOW()
+SELECT UUID(), b.Code, 'Role', @role_gm, 1, NOW()
 FROM SYS_Button b;
 
--- 2. 本部长（role_head）：拥有部品管理、模具管理、纳期变更、依赖终止、供应商处理模块，以及系统管理中的组织架构管理
+-- 2) 本部长（部分菜单，部分按钮）
 INSERT INTO SYS_MenuPermission (Code, RouteCode, SubjectType, SubjectCode, IsGranted, CreateTime)
-SELECT UUID(), r.Code, 'Role', 'role_head', 1, NOW()
-FROM SYS_Route r WHERE r.Code IN (
-    'route_part', 'route_part_kaifeng', 'route_part_quotation', 'route_part_supplier',
-    'route_mold', 'route_mold_quotation', 'route_mold_supplier', 'route_mold_kaifeng',
-    'route_delivery_change', 'route_delivery_change_approved', 'route_delivery_change_pending',
-    'route_dependency_termination', 'route_dep_ter_approved', 'route_dep_ter_pending',
-    'route_supplier_process', 'route_supplier_process_history', 'route_supplier_process_quotation',
-    'route_system_org'   -- 允许查看组织架构
+SELECT UUID(), Code, 'Role', @role_head, 1, NOW()
+FROM SYS_Route WHERE Code IN (
+    @route_part, @route_part_kaifeng, @route_part_quotation, @route_part_supplier,
+    @route_mold, @route_mold_quotation, @route_mold_supplier, @route_mold_kaifeng,
+    @route_delivery_change, @route_delivery_change_approved, @route_delivery_change_pending,
+    @route_dependency_termination, @route_dep_ter_approved, @route_dep_ter_pending,
+    @route_supplier_process, @route_supplier_process_history, @route_supplier_process_quotation,
+    @route_system_org
 );
 
--- 本部长的按钮权限：仅查看、导出、提交（无新增、编辑、删除）
 INSERT INTO SYS_ButtonPermission (Code, ButtonCode, SubjectType, SubjectCode, IsGranted, CreateTime)
-SELECT UUID(), b.Code, 'Role', 'role_head', 1, NOW()
+SELECT UUID(), b.Code, 'Role', @role_head, 1, NOW()
 FROM SYS_Button b
 WHERE b.ButtonKey IN ('View', 'Export', 'Submit', 'Approve', 'Reject', 'SubmitQuotation')
   AND b.RouteCode IN (
-      SELECT Code FROM SYS_Route WHERE Code IN (
-          'route_part_kaifeng', 'route_part_quotation', 'route_part_supplier',
-          'route_mold_kaifeng', 'route_mold_quotation', 'route_mold_supplier',
-          'route_delivery_change_approved', 'route_delivery_change_pending',
-          'route_dep_ter_approved', 'route_dep_ter_pending',
-          'route_supplier_process_history', 'route_supplier_process_quotation'
-      )
+      @route_part_kaifeng, @route_part_quotation, @route_part_supplier,
+      @route_mold_kaifeng, @route_mold_quotation, @route_mold_supplier,
+      @route_delivery_change_approved, @route_delivery_change_pending,
+      @route_dep_ter_approved, @route_dep_ter_pending,
+      @route_supplier_process_history, @route_supplier_process_quotation
   );
 
--- 3. 部长（role_manager）：仅拥有部品管理和模具管理的查看、导出权限，以及纳期变更待审核的审核按钮
+-- 3) 部长
 INSERT INTO SYS_MenuPermission (Code, RouteCode, SubjectType, SubjectCode, IsGranted, CreateTime)
-SELECT UUID(), r.Code, 'Role', 'role_manager', 1, NOW()
-FROM SYS_Route r WHERE r.Code IN (
-    'route_part_kaifeng', 'route_part_quotation', 'route_part_supplier',
-    'route_mold_kaifeng', 'route_mold_quotation', 'route_mold_supplier',
-    'route_delivery_change_pending'
+SELECT UUID(), Code, 'Role', @role_manager, 1, NOW()
+FROM SYS_Route WHERE Code IN (
+    @route_part_kaifeng, @route_part_quotation, @route_part_supplier,
+    @route_mold_kaifeng, @route_mold_quotation, @route_mold_supplier,
+    @route_delivery_change_pending
 );
 
--- 部长的按钮权限：仅查看、导出（报价依赖可以提交，但不可审核）
 INSERT INTO SYS_ButtonPermission (Code, ButtonCode, SubjectType, SubjectCode, IsGranted, CreateTime)
-SELECT UUID(), b.Code, 'Role', 'role_manager', 1, NOW()
+SELECT UUID(), b.Code, 'Role', @role_manager, 1, NOW()
 FROM SYS_Button b
 WHERE b.ButtonKey IN ('View', 'Export', 'Submit')
   AND b.RouteCode IN (
-      SELECT Code FROM SYS_Route WHERE Code IN (
-          'route_part_kaifeng', 'route_part_quotation', 'route_part_supplier',
-          'route_mold_kaifeng', 'route_mold_quotation', 'route_mold_supplier'
-      )
+      @route_part_kaifeng, @route_part_quotation, @route_part_supplier,
+      @route_mold_kaifeng, @route_mold_quotation, @route_mold_supplier
   );
 
--- 部长对纳期变更待审核拥有审核权限
 INSERT INTO SYS_ButtonPermission (Code, ButtonCode, SubjectType, SubjectCode, IsGranted, CreateTime)
-SELECT UUID(), b.Code, 'Role', 'role_manager', 1, NOW()
+SELECT UUID(), b.Code, 'Role', @role_manager, 1, NOW()
 FROM SYS_Button b
-WHERE b.ButtonKey IN ('Approve', 'Reject')
-  AND b.RouteCode = 'route_delivery_change_pending';
+WHERE b.ButtonKey IN ('Approve', 'Reject') AND b.RouteCode = @route_delivery_change_pending;
 
--- 4. 课长（role_section）：仅拥有部品管理中的报价依赖查看和提交，以及模具管理中的报价依赖查看
+-- 4) 课长
 INSERT INTO SYS_MenuPermission (Code, RouteCode, SubjectType, SubjectCode, IsGranted, CreateTime)
-VALUES 
-(UUID(), 'route_part_quotation', 'Role', 'role_section', 1, NOW()),
-(UUID(), 'route_mold_quotation', 'Role', 'role_section', 1, NOW());
+VALUES
+(UUID(), @route_part_quotation, 'Role', @role_section, 1, NOW()),
+(UUID(), @route_mold_quotation, 'Role', @role_section, 1, NOW());
 
 INSERT INTO SYS_ButtonPermission (Code, ButtonCode, SubjectType, SubjectCode, IsGranted, CreateTime)
-SELECT UUID(), b.Code, 'Role', 'role_section', 1, NOW()
+SELECT UUID(), b.Code, 'Role', @role_section, 1, NOW()
 FROM SYS_Button b
-WHERE b.ButtonKey IN ('View', 'Submit')
-  AND b.RouteCode IN ('route_part_quotation', 'route_mold_quotation');
+WHERE b.ButtonKey IN ('View', 'Submit') AND b.RouteCode IN (@route_part_quotation, @route_mold_quotation);
 
--- 5. 担当（role_duty）：仅拥有部品报价依赖的查看权限（本人数据权限将另外通过数据范围控制）
+-- 5) 担当
 INSERT INTO SYS_MenuPermission (Code, RouteCode, SubjectType, SubjectCode, IsGranted, CreateTime)
-VALUES (UUID(), 'route_part_quotation', 'Role', 'role_duty', 1, NOW());
+VALUES (UUID(), @route_part_quotation, 'Role', @role_duty, 1, NOW());
 
 INSERT INTO SYS_ButtonPermission (Code, ButtonCode, SubjectType, SubjectCode, IsGranted, CreateTime)
-SELECT UUID(), b.Code, 'Role', 'role_duty', 1, NOW()
+SELECT UUID(), b.Code, 'Role', @role_duty, 1, NOW()
 FROM SYS_Button b
-WHERE b.ButtonKey = 'View' AND b.RouteCode = 'route_part_quotation';
+WHERE b.ButtonKey = 'View' AND b.RouteCode = @route_part_quotation;
 
--- 6. 日志审计员（role_auditor）：仅拥有系统管理的日志管理菜单
+-- 6) 日志审计员
 INSERT INTO SYS_MenuPermission (Code, RouteCode, SubjectType, SubjectCode, IsGranted, CreateTime)
-VALUES (UUID(), 'route_system_log', 'Role', 'role_auditor', 1, NOW());
+VALUES (UUID(), @route_system_log, 'Role', @role_auditor, 1, NOW());
 
 INSERT INTO SYS_ButtonPermission (Code, ButtonCode, SubjectType, SubjectCode, IsGranted, CreateTime)
-SELECT UUID(), b.Code, 'Role', 'role_auditor', 1, NOW()
+SELECT UUID(), b.Code, 'Role', @role_auditor, 1, NOW()
 FROM SYS_Button b
-WHERE b.ButtonKey = 'View' AND b.RouteCode = 'route_system_log';
+WHERE b.ButtonKey = 'View' AND b.RouteCode = @route_system_log;
 
--- 7. 管理员（role_admin）：拥有所有系统管理子菜单（不包含业务菜单）
+-- 7) 管理员（所有系统管理子菜单，不含上级 route_system）
 INSERT INTO SYS_MenuPermission (Code, RouteCode, SubjectType, SubjectCode, IsGranted, CreateTime)
-SELECT UUID(), r.Code, 'Role', 'role_admin', 1, NOW()
-FROM SYS_Route r
-WHERE r.Code LIKE 'route_system%' AND r.Code != 'route_system';
-
--- 管理员拥有系统管理模块的所有按钮
-INSERT INTO SYS_ButtonPermission (Code, ButtonCode, SubjectType, SubjectCode, IsGranted, CreateTime)
-SELECT UUID(), b.Code, 'Role', 'role_admin', 1, NOW()
-FROM SYS_Button b
-WHERE b.RouteCode LIKE 'route_system%';
-
--- ======================================================
--- 权限查询示例（获取用户 user_gm 的所有有效菜单权限）
--- ======================================================
--- 思路：合并三种授权来源（用户直接授权、角色授权、组织授权），并去重。
--- 以下查询获取 user_gm 的菜单权限（包括其所属角色以及直接授权）
-SELECT DISTINCT r.Code AS RouteCode, r.Path, r.Component, r.Name, r.MetaTitle, r.MetaIcon, r.Sort
-FROM SYS_Route r
-WHERE r.IsEnable = 1 AND r.IsDelete = 0
-AND EXISTS (
-    -- 菜单权限存在且授权
-    SELECT 1 FROM SYS_MenuPermission mp
-    WHERE mp.RouteCode = r.Code
-    AND mp.IsGranted = 1
-    AND mp.IsDelete = 0
-    AND (
-        -- 直接授权给用户
-        (mp.SubjectType = 'User' AND mp.SubjectCode = 'user_gm')
-        OR
-        -- 授权给用户所属的角色（在任一任职组织下的角色）
-        (mp.SubjectType = 'Role' AND mp.SubjectCode IN (
-            SELECT uro.RoleCode FROM SYS_UserRoleOrg uro
-            WHERE uro.UserCode = 'user_gm' AND uro.IsEnable = 1 AND uro.IsDelete = 0
-        ))
-        OR
-        -- 授权给用户任职的组织（及其父级组织，可根据需求递归）
-        (mp.SubjectType = 'Org' AND mp.SubjectCode IN (
-            SELECT uro.OrgCode FROM SYS_UserRoleOrg uro
-            WHERE uro.UserCode = 'user_gm' AND uro.IsEnable = 1 AND uro.IsDelete = 0
-        ))
-    )
+SELECT UUID(), Code, 'Role', @role_admin, 1, NOW()
+FROM SYS_Route
+WHERE Code IN (
+    @route_system_dict, @route_system_user, @route_system_menu,
+    @route_system_log, @route_system_role, @route_system_button, @route_system_org
 );
 
-
--- 查询总经理可见的所有菜单（应包含所有）
-SELECT DISTINCT r.MetaTitle, r.Path
-FROM SYS_Route rsys_button
-WHERE r.Code IN (
-    SELECT mp.RouteCode FROM SYS_MenuPermission mp
-    WHERE mp.SubjectType = 'Role' AND mp.SubjectCode = 'role_gm' AND mp.IsGranted=1
-);
-
--- 查询本部长在部品管理模块下拥有的按钮
-SELECT b.Name, b.ButtonKey
+INSERT INTO SYS_ButtonPermission (Code, ButtonCode, SubjectType, SubjectCode, IsGranted, CreateTime)
+SELECT UUID(), b.Code, 'Role', @role_admin, 1, NOW()
 FROM SYS_Button b
-WHERE b.RouteCode IN ('route_part_kaifeng', 'route_part_quotation', 'route_part_supplier')
-AND EXISTS (
-    SELECT 1 FROM SYS_ButtonPermission bp
-    WHERE bp.ButtonCode = b.Code AND bp.SubjectType = 'Role' AND bp.SubjectCode = 'role_head'
+WHERE b.RouteCode IN (
+    @route_system_dict, @route_system_user, @route_system_menu,
+    @route_system_log, @route_system_role, @route_system_button, @route_system_org
 );

@@ -3,7 +3,7 @@
     public partial class SysButton
     {
         public virtual SysRoute Route { get; set; }
-        public virtual ICollection<SysButtonPermission> ButtonPermissions { get; set; } = new HashSet<SysButtonPermission>();
-        public virtual ICollection<SysPermissionDelegation> Delegations { get; set; } = new HashSet<SysPermissionDelegation>();
+        public virtual ICollection<SysButtonpermission> ButtonPermissions { get; set; } = new HashSet<SysButtonpermission>();
+        public virtual ICollection<SysPermissiondelegation> Delegations { get; set; } = new HashSet<SysPermissiondelegation>();
     }
 }

@@ -1,18 +1,15 @@
-﻿using Domain.Entities;
-using Domain.Interface.Services.Authentication;
-using Domain.Model.Authentication;
-namespace Repositories.Authentication.Providers
-{
-    public class WindowsAuthenticationProvider
-        : IAuthenticationProvider
-    {
-        public string Key => "Windows";
+﻿using Application.Auth;
+using Application.Auth.DTO;
+using Domain.Entities;
 
-        public Task<SysUser?> AuthenticateAsync(
-            AuthenticationRequest request)
-        {
-            throw new NotImplementedException(
-                "Windows认证暂未实现");
-        }
+namespace Infrastructure.Authentication.Providers;
+
+public class WindowsAuthenticationProvider : IAuthenticationProvider
+{
+    public string Key => "Windows";
+
+    public Task<SysUser?> AuthenticateAsync(AuthenticationRequest request)
+    {
+        throw new NotImplementedException();
     }
 }

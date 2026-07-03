@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Application.Providers;
+using Microsoft.EntityFrameworkCore;
 
 namespace Repositories.Persistence.Providers;
 
 public class PostgreSqlDatabaseProvider
     : IDatabaseProvider
 {
-    public string Name => "PostgreSql";
+    public string ProviderName => "PostgreSql";
 
     public void Configure(
         DbContextOptionsBuilder options,

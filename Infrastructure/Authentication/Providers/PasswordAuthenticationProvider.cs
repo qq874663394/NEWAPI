@@ -1,47 +1,37 @@
-﻿using Domain.Entities;
+﻿using Application.Auth;
+using Application.Auth.DTO;
+using Domain.Entities;
 using Domain.Interface.Repositories;
-using Domain.Interface.Services.Authentication;
-using Domain.Model.Authentication;
-using Domain.Specifications;
 using Infrastructure.Authentication.Security;
 using Microsoft.EntityFrameworkCore;
 
-namespace Repositories.Authentication.Providers
+namespace Infrastructure.Authentication.Providers;
+
+public class PasswordAuthenticationProvider : IAuthenticationProvider
 {
-    public class PasswordAuthenticationProvider
-           : IAuthenticationProvider
+    private readonly IRepository<SysUser> _repository;
+
+    public string Key => "Password";
+
+    public PasswordAuthenticationProvider(IRepository<SysUser> repository)
     {
-        private readonly IRepository<SysUser> _repository;
+        _repository = repository;
+    }
 
-        public string Key => "Password";
+    public async Task<SysUser?> AuthenticateAsync(AuthenticationRequest request)
+    {
+        var user = await _repository.Query()
+            .Include(x => x.UserRoleOrgs)
+            .FirstOrDefaultAsync(x => x.Name == request.UserName);
 
-        public PasswordAuthenticationProvider(
-            IRepository<SysUser> repository)
-        {
-            _repository = repository;
-        }
+        if (user == null)
+            return null;
 
-        public async Task<SysUser?> AuthenticateAsync(
-            AuthenticationRequest request)
-        {
-            var user = await _repository.Query()
-                .Where(p => p.Apo != null && p.Apo == request.Username)
-                .Include(p => p.UserRoleOrgs)
-                .FirstOrDefaultAsync();
+        if (!CryptHelper.VerifyPassword(request.Password, user.Password))
+            return null;
 
-            if (user == null)
-                return null;
+        user.LastLoginTime = DateTime.Now;
 
-            if (!CryptHelper.VerifyPassword(
-                    request.Password,
-                    user.Password))
-            {
-                return null;
-            }
-
-            user.LastLoginTime = DateTime.Now;
-
-            return user;
-        }
+        return user;
     }
 }

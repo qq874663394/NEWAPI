@@ -1,6 +1,6 @@
 ﻿namespace Domain.Entities
 {
-    public partial class SysReportLine
+    public partial class SysReportline
     {
         public virtual SysUser User { get; set; }
         public virtual SysUser Supervisor { get; set; }

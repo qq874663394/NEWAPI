@@ -1,8 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Application.Providers;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Repositories.DbContexts;
 using Repositories.Persistence;
-using Repositories.Persistence.Providers;
+using Repositories.Persistence.Providers;   // 引入具体实现
 
 namespace DependencyInjection;
 
@@ -12,36 +14,36 @@ public static class PersistenceModule
         this IServiceCollection services,
         IConfiguration configuration)
     {
-        services.AddScoped<IDatabaseProvider,
-            SqlServerDatabaseProvider>();
+        // =========================
+        // 注册所有数据库提供者（必须）
+        // 因为它们是无状态的，可以注册为 Singleton
+        // =========================
+        services.AddSingleton<IDatabaseProvider, SqlServerDatabaseProvider>();
+        services.AddSingleton<IDatabaseProvider, MySqlDatabaseProvider>();
+        services.AddSingleton<IDatabaseProvider, PostgreSqlDatabaseProvider>();
 
-        services.AddScoped<IDatabaseProvider,
-            MySqlDatabaseProvider>();
+        // 注册提供者注册表（也设为 Singleton，与提供者生命周期一致）
+        services.AddSingleton<DatabaseProviderRegistry>();
 
-        services.AddScoped<IDatabaseProvider,
-            PostgreSqlDatabaseProvider>();
+        // DbContext（通常 Scoped，不要改 Singleton）
+        services.AddDbContext<WebApiDbContext>((sp, options) =>
+        {
+            var registry =
+                sp.GetRequiredService<DatabaseProviderRegistry>();
 
-        services.AddScoped<DatabaseProviderRegistry>();
+            var providerName =
+                configuration["Database:Provider"]
+                ?? throw new InvalidOperationException("未配置 Database:Provider。");
 
-        services.AddDbContext<WebApiDbContext>(
-            (sp, options) =>
-            {
-                var registry =
-                    sp.GetRequiredService<DatabaseProviderRegistry>();
+            var connectionString =
+                configuration.GetConnectionString(providerName)
+                ?? throw new InvalidOperationException(
+                    $"未找到连接字符串：{providerName}");
 
-                var providerName =
-                    configuration["Database:Provider"];
-
-                var provider =
-                    registry.GetProvider(providerName);
-
-                var connectionString =
-                    configuration.GetConnectionString(providerName);
-
-                provider.Configure(
-                    options,
-                    connectionString);
-            });
+            registry
+                .GetProvider(providerName)
+                .Configure(options, connectionString);
+        });
 
         return services;
     }
