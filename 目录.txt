@@ -1,0 +1,139 @@
+NEWAPI/
+├── AuthApplication.sln                          # 解决方案文件
+├── .github/workflows/                           # CI/CD
+│
+├── Domain/                                      # 🟢 领域层
+│   ├── Base/
+│   │   ├── Entity.cs
+│   │   ├── IAggregateRoot.cs
+│   │   └── IEntity.cs
+│   ├── Entities/                                # 14 个 EF 实体
+│   │   ├── SysAttachment.cs
+│   │   ├── SysButton.cs
+│   │   ├── SysButtonpermission.cs
+│   │   ├── SysDictionary.cs
+│   │   ├── SysEmailqueue.cs
+│   │   ├── SysLog.cs
+│   │   ├── SysMenupermission.cs
+│   │   ├── SysOrg.cs
+│   │   ├── SysPermissiondelegation.cs
+│   │   ├── SysReportline.cs
+│   │   ├── SysRole.cs
+│   │   ├── SysRoute.cs
+│   │   ├── SysUser.cs
+│   │   └── SysUserroleorg.cs
+│   ├── PartialEntities/                         # 11 个 Partial 扩展
+│   │   └── Sys*.Partial.cs
+│   ├── Interface/                               # 领域层接口定义
+│   │   ├── Repositories/IRepository.cs
+│   │   ├── Services/                            # ⚠️ 空目录
+│   │   ├── Specifications/ISpecification.cs
+│   │   └── UnitOfWorks/IUnitOfWork.cs
+│   ├── Specifications/                          # Specification 模式实现
+│   │   ├── Specification.cs
+│   │   ├── ExpressionSpecification.cs
+│   │   ├── AnySpecification.cs
+│   │   ├── ParameterReplacer.cs
+│   │   └── SpecExprExtensions.cs
+│   ├── Enums/                                   # ⚠️ 空目录
+│   ├── Exceptions/BusinessException.cs
+│   ├── Model/                                   # ⚠️ 空目录
+│   ├── CodeTemplates/EFCore/                    # T4 模板
+│   └── Domain.csproj
+│
+├── Application/                                 # 🟡 应用层
+│   ├── Auth/
+│   │   ├── DTO/                                 # 🔴 18 个 DTO 堆在一起
+│   │   │   ├── LoginRequest.cs / LoginResult.cs
+│   │   │   ├── UserDto.cs / CreateUserRequest.cs / UpdateUserRequest.cs
+│   │   │   ├── RoleDto.cs / CreateRoleRequest.cs / UpdateRoleRequest.cs
+│   │   │   ├── OrgDto.cs / CreateOrgRequest.cs / UpdateOrgRequest.cs
+│   │   │   ├── AssignRoleOrgRequest.cs / UserOrgRoleDto.cs
+│   │   │   ├── AuthenticationRequest.cs / RefreshRequest.cs
+│   │   │   ├── ChangePasswordRequest.cs / UserQueryRequest.cs
+│   │   │   └── PagedResult.cs
+│   │   ├── IAuthService.cs          ┐
+│   │   ├── AuthService.cs           ┤ 🔴 接口与实现混放
+│   │   ├── IUserService.cs          │
+│   │   ├── UserService.cs           │
+│   │   ├── IRoleService.cs          │
+│   │   ├── RoleService.cs           │
+│   │   ├── IOrgService.cs           │
+│   │   ├── ITokenService.cs         │
+│   │   ├── IPasswordHasher.cs       │
+│   │   ├── IAuthenticationProvider.cs
+│   │   ├── IAuthenticationProviderRegistry.cs
+│   │   ├── JwtOptions.cs
+│   │   └── JwtTokenResult.cs
+│   ├── Common/Extensions/EnumerablePagingExtensions.cs
+│   ├── Providers/IDatabaseProvider.cs
+│   └── Application.csproj
+│
+├── Infrastructure/                              # 🟠 基础设施层
+│   ├── DbContexts/
+│   │   ├── WebApiDbContext.cs
+│   │   └── WebApiDbContext.DbSet.cs
+│   ├── Repositories/
+│   │   ├── Repository.cs
+│   │   └── EfUnitOfWork.cs
+│   ├── UnitOfWorks/Class1.cs                    # 🔴 占位残留
+│   ├── Specifications/                          # ⚠️ 空目录
+│   ├── Extensions/                              # ⚠️ 空目录
+│   ├── Authentication/
+│   │   ├── Providers/                           # 6 种认证提供者
+│   │   │   ├── PasswordAuthenticationProvider.cs
+│   │   │   ├── LdapAuthenticationProvider.cs
+│   │   │   ├── OAuthAuthenticationProvider.cs
+│   │   │   ├── WindowsAuthenticationProvider.cs
+│   │   │   ├── WeChatAuthenticationProvider.cs
+│   │   │   └── ApoAuthenticationProvider.cs
+│   │   ├── Security/
+│   │   │   ├── JwtTokenService.cs
+│   │   │   ├── PasswordHasher.cs
+│   │   │   └── CryptHelper.cs
+│   │   ├── CurrentUser/
+│   │   │   ├── ICurrentUser.cs
+│   │   │   ├── CurrentUser.cs
+│   │   │   └── CurrentUserAccessor.cs
+│   │   ├── Authorization/PermissionHandler.cs
+│   │   └── AuthenticationProviderRegistry.cs
+│   └── Persistence/
+│       ├── Configurations/AllEntityConfigurations.cs
+│       ├── Providers/                           # 3 种数据库提供者
+│       │   ├── SqlServerDatabaseProvider.cs
+│       │   ├── MySqlDatabaseProvider.cs
+│       │   └── PostgreSqlDatabaseProvider.cs
+│       └── DatabaseProviderRegistry.cs
+│
+├── DependencyInjection/                         # 🔧 DI 注册模块
+│   ├── ServiceCollectionExtensions.cs
+│   ├── InfrastructureModule.cs
+│   ├── PersistenceModule.cs
+│   ├── RepositoryModule.cs
+│   ├── AuthenticationInjection.cs
+│   ├── CurrentUserModule.cs
+│   └── DependencyInjection.csproj
+│
+├── AuthApplication/                             # 🌐 Web API 宿主
+│   ├── Common/
+│   │   ├── ApiCode.cs
+│   │   ├── ApiResult.cs
+│   │   └── PageResult.cs
+│   ├── Controllers/
+│   │   ├── BaseController.cs
+│   │   └── SystemManage/
+│   │       ├── HomeController.cs                # ⚠️ 放在 SystemManage 下但无子目录
+│   │       ├── Auth/Controllers/AuthController.cs   # 🔴 嵌套冗余
+│   │       ├── Org/Controllers/                 # ⚠️ 空目录
+│   │       ├── Role/Controllers/                # ⚠️ 空目录
+│   │       └── User/Controllers/UserController.cs
+│   ├── Extensions/ExceptionExtension.cs
+│   ├── Middlewares/ExceptionMiddleware.cs
+│   ├── Program.cs
+│   └── AuthApplication.csproj
+│
+├── Repositories/                                # 🔴 几乎废弃
+│   └── DbContexts/
+│       └── WebApiDbContext.DbSet.cs             # 与 Infrastructure 重复
+│
+└── 表结构/                                      # 📋 数据库脚本

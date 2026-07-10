@@ -1,9 +1,13 @@
-﻿using Application.Auth;
 using Infrastructure.Authentication;
 using Infrastructure.Authentication.Providers;
 using Infrastructure.Authentication.Security;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
+using Application.Options;
+using Application.Interfaces.Auth;
+using Application.Interfaces.Role;
+using Application.Services.Auth;
+using Application.Services.Role;
 
 namespace DependencyInjection;
 
@@ -22,6 +26,12 @@ public static class AuthenticationInjection
         // Auth Core（接口 → 实现）
         // =========================
         services.AddScoped<IAuthService, AuthService>();
+
+        // =========================
+        // User Management（接口 → 实现）
+        // =========================
+        services.AddScoped<IRoleService, RoleService>();
+        services.AddScoped<IPasswordHasher, PasswordHasher>();
 
         // 把具体类注册改成接口注册，并添加 ITokenService 映射
         services.AddScoped<ITokenService, JwtTokenService>();        // 关键：添加接口映射

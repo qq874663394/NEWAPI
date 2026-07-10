@@ -1,4 +1,4 @@
-﻿using Application.Providers;
+﻿using Application.Interfaces;
 using System.Collections.Concurrent;
 
 namespace Repositories.Persistence;

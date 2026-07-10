@@ -1,7 +1,7 @@
-﻿using Application.Auth;
-using Application.Auth.DTO;
+﻿using Application.DTO.Auth;
+using Application.Interfaces.Auth;
 using Domain.Entities;
-using Domain.Interface.Repositories;
+using Domain.Interfaces.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Authentication.Providers;

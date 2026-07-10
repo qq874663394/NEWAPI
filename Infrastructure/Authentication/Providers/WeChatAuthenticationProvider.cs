@@ -1,5 +1,5 @@
-﻿using Application.Auth;
-using Application.Auth.DTO;
+﻿using Application.DTO.Auth;
+using Application.Interfaces.Auth;
 using Domain.Entities;
 
 namespace Infrastructure.Authentication.Providers;

@@ -1,7 +1,7 @@
-﻿using Application.Auth;
-using Application.Auth.DTO;
+using Application.DTO.Auth;
+using Application.Interfaces.Auth;
 using Domain.Entities;
-using Domain.Interface.Repositories;
+using Domain.Interfaces.Repositories;
 using Infrastructure.Authentication.Security;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,13 +20,13 @@ public class PasswordAuthenticationProvider : IAuthenticationProvider
 
     public async Task<SysUser?> AuthenticateAsync(AuthenticationRequest request)
     {
-        var user = await _repository.Query()
-            .Include(x => x.UserRoleOrgs)
-            .FirstOrDefaultAsync(x => x.Name == request.UserName);
+         var user = await _repository.Query()
+             .Include(x => x.UserRoleOrgs)
+             .FirstOrDefaultAsync(x => x.Name == request.UserName);
+
 
         if (user == null)
             return null;
-
         if (!CryptHelper.VerifyPassword(request.Password, user.Password))
             return null;
 

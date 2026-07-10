@@ -27,7 +27,7 @@
 
     var usings = new List<string>
     {
-        "Domain.Interface.IAggregateRoots"
+        "Domain.Base"
     };
 
     if (Options.UseDataAnnotations)

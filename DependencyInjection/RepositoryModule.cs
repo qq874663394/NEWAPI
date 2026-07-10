@@ -1,5 +1,5 @@
-﻿using Domain.Interface.Repositories;
-using Domain.Interface.UnitOfWorks;
+﻿using Domain.Interfaces.Repositories;
+using Domain.Interfaces.UnitOfWorks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

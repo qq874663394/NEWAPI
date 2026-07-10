@@ -1,4 +1,4 @@
-﻿using Application.Providers;
+﻿using Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Repositories.Persistence.Providers;

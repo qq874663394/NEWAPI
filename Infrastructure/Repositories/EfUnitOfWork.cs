@@ -1,6 +1,6 @@
 ﻿using Repositories.DbContexts;
 
-namespace Domain.Interface.UnitOfWorks
+namespace Domain.Interfaces.UnitOfWorks
 {
     public class EfUnitOfWork : IUnitOfWork
     {
